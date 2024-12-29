@@ -1,0 +1,129 @@
+.jummbotron {
+  background-color: #273036;
+}
+
+.product-section {
+  background-color: #273036;
+  padding: 60px 0;
+}
+
+.product-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #f8f9fa;
+}
+
+.product-description {
+  font-size: 1rem;
+  color: #ddd;
+  line-height: 1.6;
+}
+
+.product-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  transition: transform 0.3s ease;
+}
+
+.product-image:hover {
+  transform: scale(1.05);
+}
+
+.product-content {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .product-content {
+    flex-direction: column;
+  }
+
+  .product-title {
+    text-align: center;
+  }
+}
+
+about-heading {
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+  color: #f8f9fa;
+}
+.about-text {
+  font-size: 1.2rem;
+  color: #ddd;
+  line-height: 1.8;
+  margin-top: 20px;
+}
+.about-section .col-md-6 {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: #273036;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.about-section .col-md-6:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+footer {
+  background-color: #212529;
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+
+footer .container {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+footer h5 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+}
+
+footer ul li a {
+  color: #ccc;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+footer ul li a:hover {
+  color: #fff;
+}
+
+footer .col-lg-3 ul li,
+footer .col-lg-2 ul li {
+  margin-bottom: 10px;
+}
+
+footer .col-lg-3 ul li a,
+footer .col-lg-2 ul li a {
+  font-size: 0.9rem;
+}
+
+footer .col-lg-2 h5,
+footer .col-lg-3 h5 {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  footer .col-lg-3,
+  footer .col-lg-2 {
+    text-align: center;
+  }
+  footer .col-lg-2 {
+    margin-top: 20px;
+  }
+}
