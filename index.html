@@ -3,399 +3,282 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PG Soft Spaceman Game</title>
+    <title>PG Soft Spaceman - Crash Game</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Roboto:wght@300;400;500&display=swap');
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
         
         .spaceman-font {
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Orbitron', monospace;
         }
         
         .space-bg {
-            background: radial-gradient(ellipse at center, #0d1b2a 0%, #000814 100%);
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            background-attachment: fixed;
         }
         
-        .glow-effect {
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5), 0 0 30px rgba(0, 255, 255, 0.3);
+        .star-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+                radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent),
+                radial-gradient(2px 2px at 160px 30px, #ddd, transparent);
+            background-repeat: repeat;
+            background-size: 200px 100px;
+            animation: twinkle 20s linear infinite;
+            z-index: -1;
         }
         
-        .rocket-animation {
-            animation: float 3s ease-in-out infinite;
+        @keyframes twinkle {
+            from { transform: translateX(0px); }
+            to { transform: translateX(-200px); }
         }
         
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+        .glow-cyan {
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3), inset 0 0 20px rgba(0, 255, 255, 0.1);
         }
         
-        .spinning {
-            animation: spin 0.5s linear infinite;
+        .glow-purple {
+            box-shadow: 0 0 20px rgba(147, 51, 234, 0.3), inset 0 0 20px rgba(147, 51, 234, 0.1);
         }
         
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        .rocket-container {
+            position: relative;
+            height: 400px;
+            overflow: hidden;
         }
         
-        .multiplier-display {
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45aaf2);
-            background-size: 300% 300%;
-            animation: gradientShift 3s ease infinite;
+        .rocket {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: all 0.1s ease-out;
+            z-index: 10;
         }
         
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        .rocket-idle {
+            bottom: 20px;
+            animation: rocket-bob 2s ease-in-out infinite;
+        }
+        
+        .rocket-flying {
+            animation: rocket-launch 10s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+        
+        @keyframes rocket-bob {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-5px); }
+        }
+        
+        @keyframes rocket-launch {
+            0% { bottom: 20px; opacity: 1; }
+            100% { bottom: 100%; opacity: 0; }
+        }
+        
+        .multiplier-graph {
+            position: relative;
+            height: 300px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .graph-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ffff, transparent);
+            transform-origin: left center;
+            transition: all 0.1s ease;
+        }
+        
+        .crash-explosion {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #ff6b6b, #ee5a52);
+            border-radius: 50%;
+            animation: explode 1s ease-out forwards;
+            z-index: 5;
+        }
+        
+        @keyframes explode {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+        }
+        
+        .multiplier-text {
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: pulse 1s ease-in-out infinite alternate;
+        }
+        
+        @keyframes pulse {
+            from { text-shadow: 0 0 10px rgba(0, 255, 255, 0.5); }
+            to { text-shadow: 0 0 30px rgba(255, 0, 255, 0.8), 0 0 40px rgba(255, 255, 0, 0.6); }
+        }
+        
+        .cashout-btn {
+            background: linear-gradient(45deg, #00ff88, #00cc6a);
+            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.4);
+        }
+        
+        .cashout-btn:hover {
+            background: linear-gradient(45deg, #00cc6a, #00ff88);
+            box-shadow: 0 4px 25px rgba(0, 255, 136, 0.6);
+        }
+        
+        .launch-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        .launch-btn:hover {
+            background: linear-gradient(45deg, #ee5a52, #ff6b6b);
+            box-shadow: 0 4px 25px rgba(255, 107, 107, 0.6);
+        }
+        
+        .history-item {
+            transition: all 0.3s ease;
+        }
+        
+        .history-item:hover {
+            transform: scale(1.05);
+        }
+        
+        .btn-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
     </style>
 </head>
-<body class="space-bg min-h-screen text-white">
-    <div class="max-w-6xl mx-auto p-4">
+<body class="space-bg text-white overflow-x-hidden">
+    <div class="star-bg"></div>
+    
+    <div class="max-w-7xl mx-auto p-4 relative z-10">
         <!-- Header -->
-        <header class="flex justify-between items-center mb-8 p-4 bg-black/20 rounded-lg">
+        <header class="flex justify-between items-center mb-6 p-4 bg-black/40 rounded-lg glow-cyan border border-cyan-500/20">
             <div class="flex items-center">
-                <img 
-                    src="https://placeholder-image-service.onrender.com/image/60x60?prompt=Spaceman+game+logo+with+astronaut+and+stars&id=spaceman-logo-001" 
-                    alt="Spaceman game logo featuring an astronaut floating among stars with glowing cosmic background" 
-                    class="w-12 h-12 mr-4"
-                />
-                <h1 class="text-2xl font-bold text-yellow-400 spaceman-font">SPACEMAN</h1>
-            </div>
-            <div class="flex items-center space-x-4">
-                <div class="bg-blue-900/50 px-4 py-2 rounded-lg">
-                    <span class="text-sm text-cyan-300">BALANCE</span>
-                    <div class="text-xl font-bold text-green-400" id="balance">1000</div>
+                <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mr-4 flex items-center justify-center glow-purple">
+                    <span class="spaceman-font text-xl font-bold">🚀</span>
                 </div>
-                <button class="bg-purple-700 hover:bg-purple-600 px-4 py-2 rounded-lg transition-colors">
-                    <span class="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        Settings
-                    </span>
-                </button>
+                <div>
+                    <h1 class="text-3xl font-bold spaceman-font text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">SPACEMAN</h1>
+                    <p class="text-sm text-gray-300">by PG Soft</p>
+                </div>
+            </div>
+            <div class="text-right">
+                <div class="text-sm text-cyan-300 mb-1">BALANCE</div>
+                <div class="text-2xl font-bold text-green-400" id="balance">$1,000.00</div>
             </div>
         </header>
 
         <!-- Main Game Area -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <!-- Game Panel -->
-            <div class="lg:col-span-2">
-                <div class="bg-black/30 rounded-xl p-6 glow-effect border border-cyan-500/30">
-                    <div class="relative h-64 mb-6 flex justify-center items-center">
-                        <div class="absolute w-full h-full flex justify-center items-center">
-                            <img 
-                                src="https://placeholder-image-service.onrender.com/image/400x300?prompt=Space+background+with+stars+and+nebula&id=space-bg-001" 
-                                alt="Deep space background with colorful nebula clouds and distant stars" 
-                                class="w-full h-full object-cover rounded-lg opacity-50"
-                            />
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+            <!-- Game Panel (Main) -->
+            <div class="lg:col-span-3">
+                <div class="bg-black/50 rounded-xl p-6 glow-cyan border border-cyan-500/20">
+                    <!-- Multiplier Display -->
+                    <div class="text-center mb-6">
+                        <div class="multiplier-text spaceman-font" id="current-multiplier">1.00x</div>
+                        <div class="text-sm text-gray-400 mt-2" id="game-status">Place your bet and launch the spaceman!</div>
+                    </div>
+                    
+                    <!-- Rocket and Graph Area -->
+                    <div class="relative mb-6">
+                        <div class="multiplier-graph mx-auto max-w-4xl">
+                            <div class="graph-line" id="graph-line" style="width: 0%;"></div>
+                            <div id="crash-explosion" class="crash-explosion hidden"></div>
                         </div>
                         
-                        <div class="relative z-10 text-center">
-                            <div class="rocket-animation mb-4">
-                                <img 
-                                    src="https://placeholder-image-service.onrender.com/image/120x120?prompt=Cartoon+astronaut+floating+in+space&id=astronaut-001" 
-                                    alt="Cartoon astronaut character floating in space with rocket thrusters" 
-                                    class="mx-auto w-24 h-24"
-                                />
-                            </div>
-                            
-                            <div id="multiplier-display" class="multiplier-display text-4xl font-bold py-4 px-8 rounded-full inline-block bg-black/50 hidden">
-                                <span id="multiplier-value">0</span>x
-                            </div>
-                            
-                            <div id="win-display" class="text-2xl text-green-400 font-bold mt-4 hidden">
-                                YOU WON: <span id="win-amount">0</span>
-                            </div>
+                        <div class="rocket-container mx-auto max-w-4xl relative">
+                            <img 
+                                id="rocket"
+                                src="https://via.placeholder.com/80x120/00ffff/000000?text=🚀" 
+                                alt="Spaceman Rocket"
+                                class="rocket rocket-idle w-20 h-30"
+                            />
+                            <!-- Nebula background -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-purple-900/20 to-transparent opacity-70"></div>
                         </div>
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <div class="text-sm text-cyan-300 mb-2">BET AMOUNT</div>
-                            <div class="flex space-x-2 mb-4">
-                                <button class="bet-amount-btn bg-blue-700 hover:bg-blue-600 px-3 py-1 rounded" data-bet="1">1</button>
-                                <button class="bet-amount-btn bg-blue-700 hover:bg-blue-600 px-3 py-1 rounded" data-bet="5">5</button>
-                                <button class="bet-amount-btn bg-blue-700 hover:bg-blue-600 px-3 py-1 rounded" data-bet="10">10</button>
-                                <button class="bet-amount-btn bg-blue-700 hover:bg-blue-600 px-3 py-1 rounded" data-bet="25">25</button>
-                                <button class="bet-amount-btn bg-blue-700 hover:bg-blue-600 px-3 py-1 rounded" data-bet="50">50</button>
-                                <button class="bet-amount-btn bg-blue-700 hover:bg-blue-600 px-3 py-1 rounded" data-bet="100">100</button>
+                    <!-- Controls -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Bet Amount -->
+                        <div class="bg-black/40 rounded-lg p-4 glow-purple">
+                            <div class="text-sm text-gray-300 mb-3">BET AMOUNT</div>
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                <button class="bet-btn px-3 py-2 bg-blue-600 hover:bg-blue-500 rounded text-sm transition" data-bet="0.10">$0.10</button>
+                                <button class="bet-btn px-3 py-2 bg-blue-600 hover:bg-blue-500 rounded text-sm transition" data-bet="1">$1</button>
+                                <button class="bet-btn px-3 py-2 bg-blue-600 hover:bg-blue-500 rounded text-sm transition" data-bet="5">$5</button>
+                                <button class="bet-btn px-3 py-2 bg-blue-600 hover:bg-blue-500 rounded text-sm transition" data-bet="10">$10</button>
+                                <button class="bet-btn px-3 py-2 bg-blue-600 hover:bg-blue-500 rounded text-sm transition" data-bet="50">$50</button>
+                                <button class="bet-btn px-3 py-2 bg-blue-600 hover:bg-blue-500 rounded text-sm transition" data-bet="100">$100</button>
                             </div>
-                            <div class="flex items-center bg-blue-900/50 rounded-lg p-2">
-                                <button class="bg-blue-700 hover:bg-blue-600 px-2 py-1 rounded-l" id="decrease-bet">-</button>
-                                <input type="number" id="bet-input" class="w-full bg-transparent text-center text-white font-bold text-xl" value="10" min="1" max="1000">
-                                <button class="bg-blue-700 hover:bg-blue-600 px-2 py-1 rounded-r" id="increase-bet">+</button>
+                            <div class="flex items-center bg-gray-800 rounded-lg overflow-hidden">
+                                <button id="bet-minus" class="px-4 py-3 text-gray-400 hover:text-white">-</button>
+                                <input type="number" id="bet-input" class="flex-1 bg-transparent text-center text-xl font-bold text-white" value="10" min="0.10" max="1000" step="0.10">
+                                <button id="bet-plus" class="px-4 py-3 text-gray-400 hover:text-white">+</button>
                             </div>
                         </div>
                         
-                        <div class="flex flex-col justify-center space-y-4">
-                            <button id="spin-btn" class="bg-green-600 hover:bg-green-500 py-3 px-6 rounded-lg text-xl font-bold transition-colors">
+                        <!-- Auto Options -->
+                        <div class="bg-black/40 rounded-lg p-4 glow-purple">
+                            <div class="text-sm text-gray-300 mb-3">AUTO CASH OUT</div>
+                            <div class="flex flex-col space-y-2">
+                                <input type="number" id="auto-cashout" class="bg-gray-800 rounded px-3 py-2 text-white text-sm" placeholder="1.50x" value="2.00">
+                                <label class="flex items-center space-x-2 text-xs">
+                                    <input type="checkbox" id="auto-bet" class="accent-cyan-400">
+                                    <span>Auto Bet</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="bg-black/40 rounded-lg p-4 glow-purple flex flex-col justify-center space-y-3">
+                            <button id="launch-btn" class="launch-btn text-white font-bold py-4 px-6 rounded-lg text-xl transition btn-disabled hidden">
                                 LAUNCH
                             </button>
-                            
-                            <div class="flex space-x-2">
-                                <button class="auto-play-btn bg-purple-700 hover:bg-purple-600 px-3 py-1 rounded text-sm" data-count="10">x10</button>
-                                <button class="auto-play-btn bg-purple-700 hover:bg-purple-600 px-3 py-1 rounded text-sm" data-count="25">x25</button>
-                                <button class="auto-play-btn bg-purple-700 hover:bg-purple-600 px-3 py-1 rounded text-sm" data-count="50">x50</button>
-                                <button class="auto-play-btn bg-purple-700 hover:bg-purple-600 px-3 py-1 rounded text-sm" data-count="100">x100</button>
-                                <button id="stop-auto" class="bg-red-700 hover:bg-red-600 px-3 py-1 rounded text-sm hidden">STOP</button>
+                            <button id="cashout-btn" class="cashout-btn text-white font-bold py-4 px-6 rounded-lg text-xl transition hidden">
+                                CASH OUT
+                            </button>
+                            <div class="text-center text-sm text-gray-400">
+                                <div id="win-message" class="hidden text-green-400 font-bold"></div>
+                                <div id="loss-message" class="hidden text-red-400 font-bold"></div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- History Panel -->
-            <div class="bg-black/30 rounded-xl p-6 border border-cyan-500/30">
-                <h2 class="text-xl font-bold text-yellow-400 mb-4 spaceman-font">MULTIPLIER HISTORY</h2>
-                <div class="grid grid-cols-5 gap-2" id="history-container">
-                    <!-- History items will be added here dynamically -->
-                    <div class="bg-blue-900/50 rounded p-2 text-center">-</div>
-                    <div class="bg-blue-900/50 rounded p-2 text-center">-</div>
-                    <div class="bg-blue-900/50 rounded p-2 text-center">-</div>
-                    <div class="bg-blue-900/50 rounded p-2 text-center">-</div>
-                    <div class="bg-blue-900/50 rounded p-2 text-center">-</div>
-                </div>
-                
-                <h2 class="text-xl font-bold text-yellow-400 mt-6 mb-4 spaceman-font">GAME STATS</h2>
-                <div class="space-y-2">
-                    <div class="flex justify-between">
-                        <span>Total Bets:</span>
-                        <span id="total-bets">0</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span>Total Wins:</span>
-                        <span id="total-wins">0</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span>Highest Multiplier:</span>
-                        <span id="highest-multiplier">0x</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Info Section -->
-        <div class="bg-black/30 rounded-xl p-6 mb-8 border border-cyan-500/30">
-            <h2 class="text-xl font-bold text-yellow-400 mb-4 spaceman-font">HOW TO PLAY</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-blue-900/50 p-4 rounded-lg">
-                    <div class="text-cyan-300 font-bold mb-2">1. SET YOUR BET</div>
-                    <p class="text-sm">Choose how much you want to bet using the buttons or input field.</p>
-                </div>
-                <div class="bg-blue-900/50 p-4 rounded-lg">
-                    <div class="text-cyan-300 font-bold mb-2">2. LAUNCH THE ROCKET</div>
-                    <p class="text-sm">Press the LAUNCH button to send the astronaut on a journey through space.</p>
-                </div>
-                <div class="bg-blue-900/50 p-4 rounded-lg">
-                    <div class="text-cyan-300 font-bold mb-2">3. COLLECT WINNINGS</div>
-                    <p class="text-sm">The multiplier increases as the rocket travels farther. Cash out at the right moment!</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Game state
-        let balance = 1000;
-        let betAmount = 10;
-        let isSpinning = false;
-        let gameResult = null;
-        let autoPlay = false;
-        let autoPlayCount = 0;
-        let gameHistory = [];
-        let totalBets = 0;
-        let totalWins = 0;
-        let highestMultiplier = 0;
-        
-        // DOM elements
-        const balanceElement = document.getElementById('balance');
-        const betInput = document.getElementById('bet-input');
-        const spinButton = document.getElementById('spin-btn');
-        const multiplierDisplay = document.getElementById('multiplier-display');
-        const multiplierValue = document.getElementById('multiplier-value');
-        const winDisplay = document.getElementById('win-display');
-        const winAmount = document.getElementById('win-amount');
-        const historyContainer = document.getElementById('history-container');
-        const stopAutoButton = document.getElementById('stop-auto');
-        const totalBetsElement = document.getElementById('total-bets');
-        const totalWinsElement = document.getElementById('total-wins');
-        const highestMultiplierElement = document.getElementById('highest-multiplier');
-        
-        // Initialize game
-        function initGame() {
-            updateBalance();
-            setupEventListeners();
-        }
-        
-        // Set up event listeners
-        function setupEventListeners() {
-            // Bet amount buttons
-            document.querySelectorAll('.bet-amount-btn').forEach(button => {
-                button.addEventListener('click', () => {
-                    const amount = parseInt(button.getAttribute('data-bet'));
-                    setBetAmount(amount);
-                });
-            });
-            
-            // Bet input controls
-            document.getElementById('increase-bet').addEventListener('click', () => {
-                setBetAmount(Math.min(betAmount + 1, 1000));
-            });
-            
-            document.getElementById('decrease-bet').addEventListener('click', () => {
-                setBetAmount(Math.max(betAmount - 1, 1));
-            });
-            
-            betInput.addEventListener('change', () => {
-                let value = parseInt(betInput.value);
-                if (isNaN(value) || value < 1) value = 1;
-                if (value > 1000) value = 1000;
-                setBetAmount(value);
-            });
-            
-            // Spin button
-            spinButton.addEventListener('click', spinWheel);
-            
-            // Auto play buttons
-            document.querySelectorAll('.auto-play-btn').forEach(button => {
-                button.addEventListener('click', () => {
-                    const count = parseInt(button.getAttribute('data-count'));
-                    handleAutoPlay(count);
-                });
-            });
-            
-            // Stop auto play button
-            stopAutoButton.addEventListener('click', stopAutoPlay);
-        }
-        
-        // Set bet amount
-        function setBetAmount(amount) {
-            betAmount = amount;
-            betInput.value = betAmount;
-        }
-        
-        // Update balance display
-        function updateBalance() {
-            balanceElement.textContent = balance;
-        }
-        
-        // Update stats display
-        function updateStats() {
-            totalBetsElement.textContent = totalBets;
-            totalWinsElement.textContent = totalWins;
-            highestMultiplierElement.textContent = highestMultiplier.toFixed(2) + 'x';
-        }
-        
-        // Spin the wheel
-        function spinWheel() {
-            if (isSpinning || balance < betAmount) return;
-            
-            isSpinning = true;
-            totalBets++;
-            balance -= betAmount;
-            updateBalance();
-            
-            gameResult = null;
-            multiplierDisplay.classList.add('hidden');
-            winDisplay.classList.add('hidden');
-            
-            spinButton.disabled = true;
-            spinButton.classList.add('spinning');
-            
-            // Simulate spin animation and result
-            setTimeout(() => {
-                const randomMultiplier = Math.random() > 0.85 ? 
-                    Math.floor(Math.random() * 500) + 10 : 
-                    Math.random() > 0.5 ? 
-                        Math.floor(Math.random() * 10) + 1 : 
-                        Math.random() * 5;
-                
-                const winAmountValue = Math.floor(betAmount * randomMultiplier);
-                
-                balance += winAmountValue;
-                if (winAmountValue > 0) totalWins++;
-                if (randomMultiplier > highestMultiplier) highestMultiplier = randomMultiplier;
-                
-                gameResult = { multiplier: randomMultiplier, winAmount: winAmountValue };
-                gameHistory.unshift(randomMultiplier);
-                if (gameHistory.length > 5) gameHistory.pop();
-                
-                updateBalance();
-                updateStats();
-                updateHistoryDisplay();
-                
-                // Show result
-                multiplierValue.textContent = randomMultiplier.toFixed(2);
-                winAmount.textContent = winAmountValue;
-                
-                multiplierDisplay.classList.remove('hidden');
-                winDisplay.classList.remove('hidden');
-                
-                isSpinning = false;
-                spinButton.disabled = false;
-                spinButton.classList.remove('spinning');
-                
-                if (autoPlay && autoPlayCount > 0) {
-                    autoPlayCount--;
-                    if (autoPlayCount > 0) {
-                        setTimeout(spinWheel, 1000);
-                    } else {
-                        stopAutoPlay();
-                    }
-                }
-            }, 2000);
-        }
-        
-        // Handle auto play
-        function handleAutoPlay(count) {
-            autoPlayCount = count;
-            autoPlay = true;
-            stopAutoButton.classList.remove('hidden');
-            
-            if (!isSpinning) {
-                spinWheel();
-            }
-        }
-        
-        // Stop auto play
-        function stopAutoPlay() {
-            autoPlay = false;
-            autoPlayCount = 0;
-            stopAutoButton.classList.add('hidden');
-        }
-        
-        // Update history display
-        function updateHistoryDisplay() {
-            historyContainer.innerHTML = '';
-            
-            for (let i = 0; i < 5; i++) {
-                const historyItem = document.createElement('div');
-                historyItem.className = 'bg-blue-900/50 rounded p-2 text-center';
-                
-                if (i < gameHistory.length) {
-                    const value = gameHistory[i];
-                    historyItem.textContent = value.toFixed(2) + 'x';
-                    
-                    // Color code based on multiplier value
-                    if (value >= 10) {
-                        historyItem.classList.add('bg-green-700/50');
-                    } else if (value >= 5) {
-                        historyItem.classList.add('bg-yellow-700/50');
-                    }
-                } else {
-                    historyItem.textContent = '-';
-                }
-                
-                historyContainer.appendChild(historyItem);
-            }
-        }
-        
-        // Initialize the game when page loads
-        window.addEventListener('DOMContentLoaded', initGame);
-    </script>
-</body>
-</html>
+            <!-- Sidebar: History & Stats -->
+            <div class="space-y-6">
+                <!-- Multiplier History -->
+                <div class="bg-black/50 rounded-xl p-4 glow-cyan border border-cyan-500/20">
+                    <h2 class="text-xl font-bold spaceman-font text-yellow-400 mb-4">RECENT MULTIPLIERS</h2>
+                    <div class="space-y-2 max-h-64 overflow-y-auto" id="history-list">
+                        <!-- Dynamic history items -->
+                        <div class="history-item bg-gray-800 rounded p-2 text-center text-sm cursor-pointer">1.23x</div>
+                        <div class="history-item bg-gray-800 rounded p-2 text-center text-sm cursor-pointer">2.45x</div>
+                        <div class="history-item bg-gray-800 rounded p-2 text-center text-sm cursor-pointer">0.85x</div>
+                        <div class="history-item bg-gray-800 rounded p-
