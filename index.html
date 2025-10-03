@@ -18,9 +18,6 @@
             color: white;
             min-height: 100vh;
             overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(28, 58, 122, 0.3) 0%, transparent 20%),
-                radial-gradient(circle at 90% 80%, rgba(28, 58, 122, 0.3) 0%, transparent 20%);
         }
 
         .stars {
@@ -56,8 +53,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .logo {
@@ -75,7 +71,6 @@
             align-items: center;
             justify-content: center;
             font-size: 24px;
-            box-shadow: 0 0 15px rgba(74, 105, 255, 0.5);
         }
 
         .logo-text {
@@ -84,8 +79,6 @@
             background: linear-gradient(to right, #fff, #4a69ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            letter-spacing: 2px;
         }
 
         .user-info {
@@ -95,7 +88,6 @@
             background: rgba(255, 255, 255, 0.05);
             padding: 10px 20px;
             border-radius: 50px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .balance {
@@ -118,49 +110,59 @@
         .game-area {
             display: grid;
             grid-template-columns: 1fr 400px;
-            gap: 30px;
-            margin-bottom: 30px;
+            gap: 20px;
+            margin-bottom: 20px;
         }
 
         .game-screen {
-            background: rgba(10, 14, 23, 0.8);
-            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
             padding: 30px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            position: relative;
-            overflow: hidden;
-            min-height: 500px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            min-height: 500px;
         }
 
         .spaceman-container {
             position: relative;
-            width: 300px;
-            height: 400px;
-            margin: 0 auto 30px;
+            width: 200px;
+            height: 250px;
+            margin-bottom: 30px;
         }
 
         .spaceman {
-            position: absolute;
             width: 100%;
             height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300"><circle cx="100" cy="80" r="50" fill="%234a69ff"/><rect x="70" y="130" width="60" height="120" rx="30" fill="%234a69ff"/><rect x="50" y="180" width="20" height="60" rx="10" fill="%231e3799"/><rect x="130" y="180" width="20" height="60" rx="10" fill="%231e3799"/><rect x="80" y="250" width="40" height="50" rx="20" fill="%231e3799"/><circle cx="80" cy="70" r="15" fill="%23ffffff" opacity="0.7"/><circle cx="120" cy="70" r="15" fill="%23ffffff" opacity="0.7"/><circle cx="80" cy="70" r="5" fill="%230a0e17"/><circle cx="120" cy="70" r="5" fill="%230a0e17"/><path d="M90 110 Q100 120 110 110" stroke="%230a0e17" stroke-width="3" fill="none"/></svg>') center no-repeat;
-            background-size: contain;
-            filter: drop-shadow(0 0 20px rgba(74, 105, 255, 0.7));
-            transition: transform 0.3s ease;
+            background: linear-gradient(135deg, #4a69ff, #1e3799);
+            border-radius: 50% 50% 40% 40%;
+            position: relative;
         }
 
-        .spaceman.flying {
-            animation: fly 0.5s ease-in-out infinite alternate;
+        .spaceman::before {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: #4a69ff;
+            border-radius: 50%;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
-        @keyframes fly {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-10px); }
+        .spaceman::after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 30px;
+            background: #ffcc00;
+            border-radius: 50% 50% 40% 40%;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         .rocket-flame {
@@ -168,111 +170,90 @@
             bottom: -20px;
             left: 50%;
             transform: translateX(-50%);
-            width: 40px;
-            height: 60px;
-            background: linear-gradient(to bottom, #ff9900, #ff3300);
-            border-radius: 50% 50% 20px 20px;
+            width: 30px;
+            height: 40px;
+            background: linear-gradient(to top, #ff3300, #ff9900);
+            border-radius: 50% 50% 0 0;
             opacity: 0;
-            animation: flame 0.5s infinite alternate;
+            transition: opacity 0.3s;
         }
 
         .rocket-flame.active {
-            opacity: 0.8;
+            opacity: 1;
+            animation: flame 0.5s infinite alternate;
         }
 
         @keyframes flame {
-            0% { height: 60px; opacity: 0.8; }
-            100% { height: 80px; opacity: 1; }
-        }
-
-        .multiplier-display {
-            font-size: 5rem;
-            font-weight: 900;
-            margin: 20px 0;
-            text-shadow: 0 0 20px #00ffcc, 0 0 40px #00ffcc;
-            color: #00ffcc;
-            transition: all 0.3s ease;
-            min-height: 120px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            padding: 10px 30px;
-            border: 2px solid rgba(0, 255, 204, 0.2);
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .multiplier-display.animate {
-            animation: pulse 0.5s ease;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
+            0% { height: 40px; }
+            100% { height: 60px; }
         }
 
         .countdown-timer {
-            font-size: 3rem;
+            font-size: 4rem;
             font-weight: 900;
             color: #ffcc00;
-            text-shadow: 0 0 20px #ffcc00;
             margin: 20px 0;
+            text-shadow: 0 0 20px #ffcc00;
+        }
+
+        .multiplier-display {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #00ffcc;
+            margin: 10px 0;
+            text-shadow: 0 0 20px #00ffcc;
             min-height: 80px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
+        .status-message {
+            font-size: 1.2rem;
+            color: #ffcc00;
+            margin: 15px 0;
+            text-align: center;
+            min-height: 30px;
+        }
+
         .bet-panel {
-            background: rgba(10, 14, 23, 0.8);
-            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
             padding: 25px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
         }
 
         .panel-title {
-            font-size: 18px;
-            font-weight: 700;
+            font-size: 1.1rem;
+            font-weight: 600;
             margin-bottom: 15px;
             color: #4a69ff;
             display: flex;
             align-items: center;
-            gap: 10px;
-        }
-
-        .bet-amount {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
 
         .bet-input-container {
             display: flex;
             align-items: center;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 5px 15px;
+            border-radius: 8px;
+            padding: 8px 15px;
+            margin-bottom: 15px;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .currency {
             color: #ffcc00;
-            font-weight: 700;
+            font-weight: 600;
         }
 
         .bet-input {
             background: transparent;
             border: none;
             color: white;
-            font-size: 18px;
-            padding: 10px;
+            font-size: 1.1rem;
+            padding: 8px;
             width: 100%;
             outline: none;
         }
@@ -280,19 +261,20 @@
         .bet-buttons {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            gap: 8px;
+            margin-bottom: 20px;
         }
 
         .bet-button {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
+            border-radius: 8px;
             padding: 12px;
             color: white;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
             text-align: center;
+            transition: all 0.2s;
         }
 
         .bet-button:hover {
@@ -300,38 +282,38 @@
         }
 
         .bet-button.active {
-            background: linear-gradient(135deg, #4a69ff, #1e3799);
+            background: #4a69ff;
             border-color: #4a69ff;
         }
 
         .action-buttons {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
+            margin-bottom: 20px;
         }
 
         .btn {
             padding: 15px;
-            border-radius: 10px;
+            border-radius: 8px;
             border: none;
-            font-weight: 700;
-            font-size: 16px;
+            font-weight: 600;
+            font-size: 1rem;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .btn-bet {
-            background: linear-gradient(135deg, #00cc66, #00aa44);
+            background: #00cc66;
             color: white;
-            box-shadow: 0 5px 15px rgba(0, 204, 102, 0.3);
         }
 
         .btn-bet:hover:not(:disabled) {
-            background: linear-gradient(135deg, #00dd77, #00bb55);
+            background: #00dd77;
             transform: translateY(-2px);
         }
 
@@ -340,17 +322,15 @@
             color: #999;
             cursor: not-allowed;
             transform: none;
-            box-shadow: none;
         }
 
         .btn-cashout {
-            background: linear-gradient(135deg, #ffcc00, #ff9900);
+            background: #ffcc00;
             color: #000;
-            box-shadow: 0 5px 15px rgba(255, 204, 0, 0.3);
         }
 
         .btn-cashout:hover:not(:disabled) {
-            background: linear-gradient(135deg, #ffdd44, #ffaa00);
+            background: #ffdd44;
             transform: translateY(-2px);
         }
 
@@ -359,51 +339,58 @@
             color: #999;
             cursor: not-allowed;
             transform: none;
-            box-shadow: none;
+        }
+
+        .btn-auto {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .btn-auto:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .game-stats {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            gap: 12px;
+            margin-bottom: 20px;
         }
 
         .stat-card {
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
+            border-radius: 8px;
             padding: 15px;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .stat-value {
-            font-size: 24px;
+            font-size: 1.3rem;
             font-weight: 700;
             color: #4a69ff;
             margin-top: 5px;
         }
 
         .history-panel {
-            background: rgba(10, 14, 23, 0.8);
-            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
             padding: 25px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
         }
 
         .history-list {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
             margin-top: 15px;
-            max-height: 200px;
-            overflow-y: auto;
         }
 
         .history-item {
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 8px 15px;
-            font-size: 14px;
+            border-radius: 15px;
+            padding: 6px 12px;
+            font-size: 0.9rem;
             font-weight: 600;
             display: flex;
             align-items: center;
@@ -423,58 +410,31 @@
         }
 
         .game-info {
-            margin-top: 30px;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
+            gap: 15px;
         }
 
         .info-card {
-            background: rgba(10, 14, 23, 0.8);
-            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
             padding: 20px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
         .info-card h3 {
-            font-size: 16px;
+            font-size: 1rem;
             margin-bottom: 10px;
             color: #4a69ff;
         }
 
         .info-card p {
-            font-size: 14px;
+            font-size: 0.9rem;
             color: rgba(255, 255, 255, 0.7);
-            line-height: 1.5;
+            line-height: 1.4;
         }
 
-        .probability-bar {
-            height: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-            margin-top: 10px;
-            overflow: hidden;
-        }
-
-        .probability-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00cc66, #ffcc00, #ff3333);
-            border-radius: 5px;
-            width: 30%;
-            transition: width 0.5s ease;
-        }
-
-        .status-message {
-            font-size: 1.2rem;
-            margin: 15px 0;
-            color: #ffcc00;
-            text-align: center;
-            min-height: 30px;
-        }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
+        @media (max-width: 768px) {
             .game-area {
                 grid-template-columns: 1fr;
             }
@@ -482,23 +442,12 @@
             .game-info {
                 grid-template-columns: 1fr;
             }
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 15px;
-            }
             
-            .game-stats {
-                grid-template-columns: 1fr;
+            .countdown-timer {
+                font-size: 3rem;
             }
             
             .multiplier-display {
-                font-size: 3.5rem;
-            }
-            
-            .countdown-timer {
                 font-size: 2.5rem;
             }
         }
@@ -513,7 +462,7 @@
                 <div class="logo-icon">
                     <i class="fas fa-user-astronaut"></i>
                 </div>
-                <div class="logo-text">Spaceman</div>
+                <div class="logo-text">SPACEMAN</div>
             </div>
             <div class="user-info">
                 <div class="balance">$<span id="balance">1000.00</span></div>
@@ -532,41 +481,38 @@
                 <div class="multiplier-display" id="multiplier">1.00x</div>
                 <div class="status-message" id="statusMessage">Place your bet before countdown ends!</div>
                 
-                <div class="game-controls">
+                <div class="action-buttons">
                     <button class="btn btn-cashout" id="cashoutBtn" disabled>
-                        <i class="fas fa-dollar-sign"></i> Cashout
+                        <i class="fas fa-dollar-sign"></i> CASHOUT
                     </button>
                 </div>
             </div>
             
             <div class="bet-panel">
-                <div class="bet-amount">
-                    <div class="panel-title">
-                        <i class="fas fa-coins"></i> Bet Amount
-                    </div>
-                    <div class="bet-input-container">
-                        <span class="currency">$</span>
-                        <input type="number" class="bet-input" id="betAmount" value="10.00" min="1" max="1000" step="0.5">
-                    </div>
-                    <div class="bet-buttons">
-                        <div class="bet-button" data-bet="1">$1</div>
-                        <div class="bet-button" data-bet="5">$5</div>
-                        <div class="bet-button" data-bet="10">$10</div>
-                        <div class="bet-button" data-bet="25">$25</div>
-                        <div class="bet-button" data-bet="50">$50</div>
-                        <div class="bet-button" data-bet="100">$100</div>
-                    </div>
+                <div class="panel-title">
+                    <i class="fas fa-coins"></i> BET AMOUNT
+                </div>
+                
+                <div class="bet-input-container">
+                    <span class="currency">$</span>
+                    <input type="number" class="bet-input" id="betAmount" value="10.00" min="1" max="1000" step="0.5">
+                </div>
+                
+                <div class="bet-buttons">
+                    <div class="bet-button" data-bet="1">$1</div>
+                    <div class="bet-button" data-bet="5">$5</div>
+                    <div class="bet-button" data-bet="10">$10</div>
+                    <div class="bet-button" data-bet="25">$25</div>
+                    <div class="bet-button" data-bet="50">$50</div>
+                    <div class="bet-button" data-bet="100">$100</div>
                 </div>
                 
                 <div class="action-buttons">
-                    <div class="panel-title">
-                        <i class="fas fa-gamepad"></i> Game Controls
-                    </div>
                     <button class="btn btn-bet" id="placeBetBtn">
-                        <i class="fas fa-rocket"></i> Place Bet
+                        <i class="fas fa-rocket"></i> PLACE BET
                     </button>
-                    <button class="btn" id="autoBetBtn" style="background: rgba(255,255,255,0.1); color: white;">
-                        <i class="fas fa-robot"></i> Auto Bet
+                    <button class="btn btn-auto" id="autoBetBtn">
+                        <i class="fas fa-robot"></i> AUTO BET: OFF
                     </button>
                 </div>
                 
@@ -593,34 +539,35 @@
         
         <div class="history-panel">
             <div class="panel-title">
-                <i class="fas fa-chart-line"></i> Recent Multipliers
+                <i class="fas fa-chart-line"></i> RECENT MULTIPLIERS
             </div>
             <div class="history-list" id="historyList">
-                <!-- History items will be added here dynamically -->
+                <div class="history-item low"><i class="fas fa-rocket"></i> 1.45x</div>
+                <div class="history-item medium"><i class="fas fa-dollar-sign"></i> 2.33x</div>
+                <div class="history-item medium"><i class="fas fa-rocket"></i> 8.76x</div>
+                <div class="history-item low"><i class="fas fa-rocket"></i> 1.12x</div>
+                <div class="history-item high"><i class="fas fa-dollar-sign"></i> 15.43x</div>
             </div>
         </div>
         
         <div class="game-info">
             <div class="info-card">
-                <h3>How to Play</h3>
-                <p>Place your bet during the 5-second countdown. When countdown reaches zero, Spaceman will launch and the multiplier will start increasing. Cash out at any time to secure your winnings before it crashes!</p>
+                <h3>HOW TO PLAY</h3>
+                <p>Place your bet during the 5-second countdown. When countdown reaches zero, Spaceman will launch. Cash out at any time to secure your winnings before it crashes!</p>
             </div>
             <div class="info-card">
-                <h3>Multiplier Probability</h3>
-                <p>The probability of reaching higher multipliers decreases exponentially. Only 10% of games reach 2x, 1% reach 10x, and 0.1% reach 100x.</p>
-                <div class="probability-bar">
-                    <div class="probability-fill" id="probabilityFill"></div>
-                </div>
+                <h3>GAME RULES</h3>
+                <p>Minimum bet: $1.00. Maximum bet: $1000.00. Multiplier starts at 1.00x and increases until crash. Higher multipliers are less likely to occur.</p>
             </div>
             <div class="info-card">
-                <h3>About Spaceman</h3>
-                <p>Spaceman is a crash game where players bet during countdown and cash out during flight. The goal is to cash out before the multiplier crashes. Inspired by Pragmatic Play's popular game.</p>
+                <h3>ABOUT</h3>
+                <p>Spaceman is a crash game inspired by Pragmatic Play. Test your timing and luck to maximize your winnings. Cash out early for small wins or risk it all for big rewards!</p>
             </div>
         </div>
     </div>
 
     <script>
-        // Game state
+        // Game State
         const gameState = {
             balance: 1000.00,
             currentBet: 0,
@@ -628,7 +575,6 @@
             isPlaying: false,
             isBetPlaced: false,
             isAutoBet: false,
-            roundHistory: [],
             crashPoint: 0,
             countdown: 5,
             countdownInterval: null,
@@ -642,59 +588,42 @@
         const multiplierElement = document.getElementById('multiplier');
         const countdownTimer = document.getElementById('countdownTimer');
         const statusMessage = document.getElementById('statusMessage');
-        const historyList = document.getElementById('historyList');
         const placeBetBtn = document.getElementById('placeBetBtn');
         const cashoutBtn = document.getElementById('cashoutBtn');
+        const autoBetBtn = document.getElementById('autoBetBtn');
         const betAmountInput = document.getElementById('betAmount');
         const currentBetElement = document.getElementById('currentBet');
         const potentialWinElement = document.getElementById('potentialWin');
         const lastWinElement = document.getElementById('lastWin');
         const roundsPlayedElement = document.getElementById('roundsPlayed');
-        const probabilityFill = document.getElementById('probabilityFill');
-        const starsContainer = document.getElementById('stars');
-        const betButtons = document.querySelectorAll('.bet-button');
-        const autoBetBtn = document.getElementById('autoBetBtn');
         const spaceman = document.getElementById('spaceman');
         const rocketFlame = document.getElementById('rocketFlame');
+        const historyList = document.getElementById('historyList');
+        const betButtons = document.querySelectorAll('.bet-button');
+        const starsContainer = document.getElementById('stars');
 
         // Initialize stars
         function createStars() {
-            const starsCount = 200;
-            
-            for (let i = 0; i < starsCount; i++) {
+            for (let i = 0; i < 100; i++) {
                 const star = document.createElement('div');
-                star.classList.add('star');
-                
-                const left = Math.random() * 100;
-                const top = Math.random() * 100;
-                const size = Math.random() * 3;
-                const delay = Math.random() * 5;
-                
-                star.style.left = `${left}%`;
-                star.style.top = `${top}%`;
-                star.style.width = `${size}px`;
-                star.style.height = `${size}px`;
-                star.style.animationDelay = `${delay}s`;
-                
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 2 + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 3 + 's';
                 starsContainer.appendChild(star);
             }
         }
 
-        // Generate crash point using realistic distribution
+        // Generate crash point
         function generateCrashPoint() {
             const rand = Math.random();
-            
-            if (rand < 0.50) {
-                return 1 + Math.random();
-            } else if (rand < 0.75) {
-                return 2 + Math.random() * 3;
-            } else if (rand < 0.90) {
-                return 5 + Math.random() * 15;
-            } else if (rand < 0.98) {
-                return 20 + Math.random() * 80;
-            } else {
-                return 100 + Math.random() * 4900;
-            }
+            if (rand < 0.5) return 1 + Math.random();
+            if (rand < 0.75) return 2 + Math.random() * 3;
+            if (rand < 0.9) return 5 + Math.random() * 15;
+            if (rand < 0.98) return 20 + Math.random() * 80;
+            return 100 + Math.random() * 4900;
         }
 
         // Start countdown
@@ -702,17 +631,13 @@
             gameState.countdown = 5;
             gameState.isBetPlaced = false;
             gameState.currentBet = 0;
-            updateUI();
             
+            updateUI();
             countdownTimer.textContent = gameState.countdown;
             statusMessage.textContent = "Place your bet before countdown ends!";
             statusMessage.style.color = "#ffcc00";
             
-            // Reset Spaceman
-            spaceman.classList.remove('flying');
             rocketFlame.classList.remove('active');
-            multiplierElement.textContent = "1.00x";
-            multiplierElement.style.color = "#00ffcc";
             
             gameState.countdownInterval = setInterval(() => {
                 gameState.countdown--;
@@ -725,48 +650,45 @@
             }, 1000);
         }
 
-        // Start flight after countdown
+        // Start flight
         function startFlight() {
             if (!gameState.isBetPlaced) {
-                statusMessage.textContent = "No bet placed! Starting new round...";
-                setTimeout(startCountdown, 2000);
-                return;
+                if (gameState.isAutoBet) {
+                    placeBet();
+                } else {
+                    statusMessage.textContent = "No bet placed! Starting new round...";
+                    setTimeout(startCountdown, 2000);
+                    return;
+                }
             }
             
             gameState.isPlaying = true;
             gameState.crashPoint = generateCrashPoint();
             gameState.currentMultiplier = 1.00;
             
-            // Start flight animation
-            spaceman.classList.add('flying');
             rocketFlame.classList.add('active');
             statusMessage.textContent = "Spaceman is flying! Cash out before crash!";
             statusMessage.style.color = "#00ffcc";
-            
             cashoutBtn.disabled = false;
             
-            // Start multiplier animation
             animateMultiplier();
         }
 
-        // Animate multiplier increasing
+        // Animate multiplier
         function animateMultiplier() {
-            let startTime = null;
+            let lastTime = null;
             const baseSpeed = 0.02;
-            let currentSpeed = baseSpeed;
             
             function step(timestamp) {
-                if (!startTime) startTime = timestamp;
+                if (!lastTime) lastTime = timestamp;
+                const delta = timestamp - lastTime;
+                lastTime = timestamp;
                 
-                const accelerationFactor = Math.max(0.1, 1 - (gameState.currentMultiplier / 100));
-                currentSpeed = baseSpeed * accelerationFactor;
-                
-                gameState.currentMultiplier += currentSpeed;
+                const speed = baseSpeed * (1 - gameState.currentMultiplier / 200);
+                gameState.currentMultiplier += speed * (delta / 16);
                 
                 multiplierElement.textContent = gameState.currentMultiplier.toFixed(2) + 'x';
                 potentialWinElement.textContent = (gameState.currentBet * gameState.currentMultiplier).toFixed(2);
-                
-                updateProbabilityBar();
                 
                 if (gameState.currentMultiplier >= gameState.crashPoint) {
                     crash();
@@ -817,7 +739,6 @@
             addToHistory(gameState.currentMultiplier, true);
             endRound("Cashed out at " + gameState.currentMultiplier.toFixed(2) + "x!");
             
-            // Start new countdown
             setTimeout(startCountdown, 3000);
         }
 
@@ -831,7 +752,6 @@
             
             setTimeout(() => {
                 endRound("Crashed at " + gameState.currentMultiplier.toFixed(2) + "x!");
-                // Start new countdown
                 setTimeout(startCountdown, 3000);
             }, 3000);
         }
@@ -846,7 +766,6 @@
                 cancelAnimationFrame(gameState.animationId);
             }
             
-            spaceman.classList.remove('flying');
             rocketFlame.classList.remove('active');
             statusMessage.textContent = message;
             statusMessage.style.color = "#ffcc00";
@@ -858,35 +777,18 @@
         function addToHistory(multiplier, isCashout) {
             const historyItem = document.createElement('div');
             
-            if (multiplier >= 10) {
-                historyItem.classList.add('history-item', 'high');
-            } else if (multiplier >= 2) {
-                historyItem.classList.add('history-item', 'medium');
-            } else {
-                historyItem.classList.add('history-item', 'low');
-            }
+            let className = 'low';
+            if (multiplier >= 10) className = 'high';
+            else if (multiplier >= 2) className = 'medium';
             
-            const icon = isCashout ? 'fa-dollar-sign' : 'fa-rocket';
-            historyItem.innerHTML = `<i class="fas ${icon}"></i> ${multiplier.toFixed(2)}x`;
+            historyItem.className = `history-item ${className}`;
+            historyItem.innerHTML = `<i class="fas ${isCashout ? 'fa-dollar-sign' : 'fa-rocket'}"></i> ${multiplier.toFixed(2)}x`;
             
             historyList.insertBefore(historyItem, historyList.firstChild);
             
-            if (historyList.children.length > 20) {
+            if (historyList.children.length > 10) {
                 historyList.removeChild(historyList.lastChild);
             }
-            
-            gameState.roundHistory.unshift({
-                multiplier: multiplier,
-                cashout: isCashout,
-                timestamp: new Date()
-            });
-        }
-
-        // Update probability bar
-        function updateProbabilityBar() {
-            const multiplier = gameState.currentMultiplier;
-            const probability = Math.min(100, 100 / Math.pow(multiplier, 0.7));
-            probabilityFill.style.width = `${probability}%`;
         }
 
         // Update UI
@@ -898,11 +800,8 @@
             roundsPlayedElement.textContent = gameState.roundsPlayed;
             
             placeBetBtn.disabled = gameState.countdown <= 0 || gameState.isBetPlaced;
-            cashoutBtn.disabled = !gameState.isPlaying;
-            
-            autoBetBtn.innerHTML = gameState.isAutoBet ?
-                '<i class="fas fa-robot"></i> Auto Bet ON' :
-                '<i class="fas fa-robot"></i> Auto Bet';
+            autoBetBtn.textContent = gameState.isAutoBet ? 
+                'AUTO BET: ON' : 'AUTO BET: OFF';
         }
 
         // Event Listeners
@@ -914,7 +813,6 @@
             updateUI();
         });
 
-        // Bet amount buttons
         betButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const betValue = parseFloat(this.getAttribute('data-bet'));
@@ -925,26 +823,15 @@
             });
         });
 
-        // Initialize the game
+        // Initialize game
         function init() {
             createStars();
             updateUI();
-            
-            // Set initial active bet button
             betButtons[2].classList.add('active');
-            
-            // Add sample history
-            addToHistory(1.45, false);
-            addToHistory(2.33, true);
-            addToHistory(8.76, false);
-            addToHistory(1.12, false);
-            addToHistory(15.43, true);
-            
-            // Start first countdown
             startCountdown();
         }
 
-        // Start the game when page loads
+        // Start game
         window.addEventListener('load', init);
     </script>
 </body>
