@@ -1,838 +1,401 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spaceman - Pragmatic Play</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>PG Soft Spaceman Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap');
+        
+        .spaceman-font {
+            font-family: 'Orbitron', sans-serif;
         }
-
-        body {
-            background: #0a0e17;
-            color: white;
-            min-height: 100vh;
-            overflow-x: hidden;
+        
+        .space-bg {
+            background: radial-gradient(ellipse at center, #0d1b2a 0%, #000814 100%);
         }
-
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
+        
+        .glow-effect {
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5), 0 0 30px rgba(0, 255, 255, 0.3);
         }
-
-        .star {
-            position: absolute;
-            background-color: white;
-            border-radius: 50%;
-            animation: twinkle 3s infinite alternate;
+        
+        .rocket-animation {
+            animation: float 3s ease-in-out infinite;
         }
-
-        @keyframes twinkle {
-            0% { opacity: 0.2; }
-            100% { opacity: 0.8; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+        
+        .spinning {
+            animation: spin 0.5s linear infinite;
         }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            margin-bottom: 20px;
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .logo-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #4a69ff, #1e3799);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-        }
-
-        .logo-text {
-            font-size: 28px;
-            font-weight: 700;
-            background: linear-gradient(to right, #fff, #4a69ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px 20px;
-            border-radius: 50px;
-        }
-
-        .balance {
-            font-weight: 700;
-            font-size: 18px;
-            color: #4a69ff;
-        }
-
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #ffcc00, #ff9900);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        .game-area {
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .game-screen {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 500px;
-        }
-
-        .spaceman-container {
-            position: relative;
-            width: 200px;
-            height: 250px;
-            margin-bottom: 30px;
-        }
-
-        .spaceman {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #4a69ff, #1e3799);
-            border-radius: 50% 50% 40% 40%;
-            position: relative;
-        }
-
-        .spaceman::before {
-            content: '';
-            position: absolute;
-            width: 80px;
-            height: 80px;
-            background: #4a69ff;
-            border-radius: 50%;
-            top: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .spaceman::after {
-            content: '';
-            position: absolute;
-            width: 60px;
-            height: 30px;
-            background: #ffcc00;
-            border-radius: 50% 50% 40% 40%;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .rocket-flame {
-            position: absolute;
-            bottom: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 30px;
-            height: 40px;
-            background: linear-gradient(to top, #ff3300, #ff9900);
-            border-radius: 50% 50% 0 0;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .rocket-flame.active {
-            opacity: 1;
-            animation: flame 0.5s infinite alternate;
-        }
-
-        @keyframes flame {
-            0% { height: 40px; }
-            100% { height: 60px; }
-        }
-
-        .countdown-timer {
-            font-size: 4rem;
-            font-weight: 900;
-            color: #ffcc00;
-            margin: 20px 0;
-            text-shadow: 0 0 20px #ffcc00;
-        }
-
+        
         .multiplier-display {
-            font-size: 3.5rem;
-            font-weight: 900;
-            color: #00ffcc;
-            margin: 10px 0;
-            text-shadow: 0 0 20px #00ffcc;
-            min-height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45aaf2);
+            background-size: 300% 300%;
+            animation: gradientShift 3s ease infinite;
         }
-
-        .status-message {
-            font-size: 1.2rem;
-            color: #ffcc00;
-            margin: 15px 0;
-            text-align: center;
-            min-height: 30px;
-        }
-
-        .bet-panel {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .panel-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: #4a69ff;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .bet-input-container {
-            display: flex;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            padding: 8px 15px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .currency {
-            color: #ffcc00;
-            font-weight: 600;
-        }
-
-        .bet-input {
-            background: transparent;
-            border: none;
-            color: white;
-            font-size: 1.1rem;
-            padding: 8px;
-            width: 100%;
-            outline: none;
-        }
-
-        .bet-buttons {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-
-        .bet-button {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 12px;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.2s;
-        }
-
-        .bet-button:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .bet-button.active {
-            background: #4a69ff;
-            border-color: #4a69ff;
-        }
-
-        .action-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .btn {
-            padding: 15px;
-            border-radius: 8px;
-            border: none;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-bet {
-            background: #00cc66;
-            color: white;
-        }
-
-        .btn-bet:hover:not(:disabled) {
-            background: #00dd77;
-            transform: translateY(-2px);
-        }
-
-        .btn-bet:disabled {
-            background: #666;
-            color: #999;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-cashout {
-            background: #ffcc00;
-            color: #000;
-        }
-
-        .btn-cashout:hover:not(:disabled) {
-            background: #ffdd44;
-            transform: translateY(-2px);
-        }
-
-        .btn-cashout:disabled {
-            background: #666;
-            color: #999;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-auto {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-        }
-
-        .btn-auto:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .game-stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            padding: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .stat-value {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #4a69ff;
-            margin-top: 5px;
-        }
-
-        .history-panel {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .history-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 15px;
-        }
-
-        .history-item {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 6px 12px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .history-item.high {
-            background: linear-gradient(135deg, #ff3333, #cc0000);
-        }
-
-        .history-item.medium {
-            background: linear-gradient(135deg, #ffcc00, #ff9900);
-        }
-
-        .history-item.low {
-            background: linear-gradient(135deg, #4a69ff, #1e3799);
-        }
-
-        .game-info {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-        }
-
-        .info-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .info-card h3 {
-            font-size: 1rem;
-            margin-bottom: 10px;
-            color: #4a69ff;
-        }
-
-        .info-card p {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
-            line-height: 1.4;
-        }
-
-        @media (max-width: 768px) {
-            .game-area {
-                grid-template-columns: 1fr;
-            }
-            
-            .game-info {
-                grid-template-columns: 1fr;
-            }
-            
-            .countdown-timer {
-                font-size: 3rem;
-            }
-            
-            .multiplier-display {
-                font-size: 2.5rem;
-            }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
     </style>
 </head>
-<body>
-    <div class="stars" id="stars"></div>
-    
-    <div class="container">
-        <div class="header">
-            <div class="logo">
-                <div class="logo-icon">
-                    <i class="fas fa-user-astronaut"></i>
-                </div>
-                <div class="logo-text">SPACEMAN</div>
+<body class="space-bg min-h-screen text-white">
+    <div class="max-w-6xl mx-auto p-4">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-8 p-4 bg-black/20 rounded-lg">
+            <div class="flex items-center">
+                <img 
+                    src="https://placeholder-image-service.onrender.com/image/60x60?prompt=Spaceman+game+logo+with+astronaut+and+stars&id=spaceman-logo-001" 
+                    alt="Spaceman game logo featuring an astronaut floating among stars with glowing cosmic background" 
+                    class="w-12 h-12 mr-4"
+                />
+                <h1 class="text-2xl font-bold text-yellow-400 spaceman-font">SPACEMAN</h1>
             </div>
-            <div class="user-info">
-                <div class="balance">$<span id="balance">1000.00</span></div>
-                <div class="avatar">JD</div>
-            </div>
-        </div>
-        
-        <div class="game-area">
-            <div class="game-screen">
-                <div class="spaceman-container">
-                    <div class="spaceman" id="spaceman"></div>
-                    <div class="rocket-flame" id="rocketFlame"></div>
+            <div class="flex items-center space-x-4">
+                <div class="bg-blue-900/50 px-4 py-2 rounded-lg">
+                    <span class="text-sm text-cyan-300">BALANCE</span>
+                    <div class="text-xl font-bold text-green-400" id="balance">1000</div>
                 </div>
-                
-                <div class="countdown-timer" id="countdownTimer">5</div>
-                <div class="multiplier-display" id="multiplier">1.00x</div>
-                <div class="status-message" id="statusMessage">Place your bet before countdown ends!</div>
-                
-                <div class="action-buttons">
-                    <button class="btn btn-cashout" id="cashoutBtn" disabled>
-                        <i class="fas fa-dollar-sign"></i> CASHOUT
-                    </button>
+                <button class="bg-purple-700 hover:bg-purple-600 px-4 py-2 rounded-lg transition-colors">
+                    <span class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Settings
+                    </span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Game Area -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Game Panel -->
+            <div class="lg:col-span-2">
+                <div class="bg-black/30 rounded-xl p-6 glow-effect border border-cyan-500/30">
+                    <div class="relative h-64 mb-6 flex justify-center items-center">
+                        <div class="absolute w-full h-full flex justify-center items-center">
+                            <img 
+                                src="https://placeholder-image-service.onrender.com/image/400x300?prompt=Space+background+with+stars+and+nebula&id=space-bg-001" 
+                                alt="Deep space background with colorful nebula clouds and distant stars" 
+                                class="w-full h-full object-cover rounded-lg opacity-50"
+                            />
+                        </div>
+                        
+                        <div class="relative z-10 text-center">
+                            <div class="rocket-animation mb-4">
+                                <img 
+                                    src="https://placeholder-image-service.onrender.com/image/120x120?prompt=Cartoon+astronaut+floating+in+space&id=astronaut-001" 
+                                    alt="Cartoon astronaut character floating in space with rocket thrusters" 
+                                    class="mx-auto w-24 h-24"
+                                />
+                            </div>
+                            
+                            <div id="multiplier-display" class="multiplier-display text-4xl font-bold py-4 px-8 rounded-full inline-block bg-black/50 hidden">
+                                <span id="multiplier-value">0</span>x
+                            </div>
+                            
+                            <div id="win-display" class="text-2xl text-green-400 font-bold mt-4 hidden">
+                                YOU WON: <span id="win-amount">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <div class="text-sm text-cyan-300 mb-2">BET AMOUNT</div>
+                            <div class="flex space-x-2 mb-4">
+                                <button class="bet-amount-btn bg-blue-700 hover:bg-blue-600 px-3 py-1 rounded" data-bet="1">1</button>
+                                <button class="bet-amount-btn bg-blue-700 hover:bg-blue-600 px-3 py-1 rounded" data-bet="5">5</button>
+                                <button class="bet-amount-btn bg-blue-700 hover:bg-blue-600 px-3 py-1 rounded" data-bet="10">10</button>
+                                <button class="bet-amount-btn bg-blue-700 hover:bg-blue-600 px-3 py-1 rounded" data-bet="25">25</button>
+                                <button class="bet-amount-btn bg-blue-700 hover:bg-blue-600 px-3 py-1 rounded" data-bet="50">50</button>
+                                <button class="bet-amount-btn bg-blue-700 hover:bg-blue-600 px-3 py-1 rounded" data-bet="100">100</button>
+                            </div>
+                            <div class="flex items-center bg-blue-900/50 rounded-lg p-2">
+                                <button class="bg-blue-700 hover:bg-blue-600 px-2 py-1 rounded-l" id="decrease-bet">-</button>
+                                <input type="number" id="bet-input" class="w-full bg-transparent text-center text-white font-bold text-xl" value="10" min="1" max="1000">
+                                <button class="bg-blue-700 hover:bg-blue-600 px-2 py-1 rounded-r" id="increase-bet">+</button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col justify-center space-y-4">
+                            <button id="spin-btn" class="bg-green-600 hover:bg-green-500 py-3 px-6 rounded-lg text-xl font-bold transition-colors">
+                                LAUNCH
+                            </button>
+                            
+                            <div class="flex space-x-2">
+                                <button class="auto-play-btn bg-purple-700 hover:bg-purple-600 px-3 py-1 rounded text-sm" data-count="10">x10</button>
+                                <button class="auto-play-btn bg-purple-700 hover:bg-purple-600 px-3 py-1 rounded text-sm" data-count="25">x25</button>
+                                <button class="auto-play-btn bg-purple-700 hover:bg-purple-600 px-3 py-1 rounded text-sm" data-count="50">x50</button>
+                                <button class="auto-play-btn bg-purple-700 hover:bg-purple-600 px-3 py-1 rounded text-sm" data-count="100">x100</button>
+                                <button id="stop-auto" class="bg-red-700 hover:bg-red-600 px-3 py-1 rounded text-sm hidden">STOP</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <div class="bet-panel">
-                <div class="panel-title">
-                    <i class="fas fa-coins"></i> BET AMOUNT
+            <!-- History Panel -->
+            <div class="bg-black/30 rounded-xl p-6 border border-cyan-500/30">
+                <h2 class="text-xl font-bold text-yellow-400 mb-4 spaceman-font">MULTIPLIER HISTORY</h2>
+                <div class="grid grid-cols-5 gap-2" id="history-container">
+                    <!-- History items will be added here dynamically -->
+                    <div class="bg-blue-900/50 rounded p-2 text-center">-</div>
+                    <div class="bg-blue-900/50 rounded p-2 text-center">-</div>
+                    <div class="bg-blue-900/50 rounded p-2 text-center">-</div>
+                    <div class="bg-blue-900/50 rounded p-2 text-center">-</div>
+                    <div class="bg-blue-900/50 rounded p-2 text-center">-</div>
                 </div>
                 
-                <div class="bet-input-container">
-                    <span class="currency">$</span>
-                    <input type="number" class="bet-input" id="betAmount" value="10.00" min="1" max="1000" step="0.5">
-                </div>
-                
-                <div class="bet-buttons">
-                    <div class="bet-button" data-bet="1">$1</div>
-                    <div class="bet-button" data-bet="5">$5</div>
-                    <div class="bet-button" data-bet="10">$10</div>
-                    <div class="bet-button" data-bet="25">$25</div>
-                    <div class="bet-button" data-bet="50">$50</div>
-                    <div class="bet-button" data-bet="100">$100</div>
-                </div>
-                
-                <div class="action-buttons">
-                    <button class="btn btn-bet" id="placeBetBtn">
-                        <i class="fas fa-rocket"></i> PLACE BET
-                    </button>
-                    <button class="btn btn-auto" id="autoBetBtn">
-                        <i class="fas fa-robot"></i> AUTO BET: OFF
-                    </button>
-                </div>
-                
-                <div class="game-stats">
-                    <div class="stat-card">
-                        <div>Current Bet</div>
-                        <div class="stat-value">$<span id="currentBet">0.00</span></div>
+                <h2 class="text-xl font-bold text-yellow-400 mt-6 mb-4 spaceman-font">GAME STATS</h2>
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span>Total Bets:</span>
+                        <span id="total-bets">0</span>
                     </div>
-                    <div class="stat-card">
-                        <div>Potential Win</div>
-                        <div class="stat-value">$<span id="potentialWin">0.00</span></div>
+                    <div class="flex justify-between">
+                        <span>Total Wins:</span>
+                        <span id="total-wins">0</span>
                     </div>
-                    <div class="stat-card">
-                        <div>Last Win</div>
-                        <div class="stat-value">$<span id="lastWin">0.00</span></div>
-                    </div>
-                    <div class="stat-card">
-                        <div>Rounds Played</div>
-                        <div class="stat-value" id="roundsPlayed">0</div>
+                    <div class="flex justify-between">
+                        <span>Highest Multiplier:</span>
+                        <span id="highest-multiplier">0x</span>
                     </div>
                 </div>
             </div>
         </div>
         
-        <div class="history-panel">
-            <div class="panel-title">
-                <i class="fas fa-chart-line"></i> RECENT MULTIPLIERS
-            </div>
-            <div class="history-list" id="historyList">
-                <div class="history-item low"><i class="fas fa-rocket"></i> 1.45x</div>
-                <div class="history-item medium"><i class="fas fa-dollar-sign"></i> 2.33x</div>
-                <div class="history-item medium"><i class="fas fa-rocket"></i> 8.76x</div>
-                <div class="history-item low"><i class="fas fa-rocket"></i> 1.12x</div>
-                <div class="history-item high"><i class="fas fa-dollar-sign"></i> 15.43x</div>
-            </div>
-        </div>
-        
-        <div class="game-info">
-            <div class="info-card">
-                <h3>HOW TO PLAY</h3>
-                <p>Place your bet during the 5-second countdown. When countdown reaches zero, Spaceman will launch. Cash out at any time to secure your winnings before it crashes!</p>
-            </div>
-            <div class="info-card">
-                <h3>GAME RULES</h3>
-                <p>Minimum bet: $1.00. Maximum bet: $1000.00. Multiplier starts at 1.00x and increases until crash. Higher multipliers are less likely to occur.</p>
-            </div>
-            <div class="info-card">
-                <h3>ABOUT</h3>
-                <p>Spaceman is a crash game inspired by Pragmatic Play. Test your timing and luck to maximize your winnings. Cash out early for small wins or risk it all for big rewards!</p>
+        <!-- Info Section -->
+        <div class="bg-black/30 rounded-xl p-6 mb-8 border border-cyan-500/30">
+            <h2 class="text-xl font-bold text-yellow-400 mb-4 spaceman-font">HOW TO PLAY</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-blue-900/50 p-4 rounded-lg">
+                    <div class="text-cyan-300 font-bold mb-2">1. SET YOUR BET</div>
+                    <p class="text-sm">Choose how much you want to bet using the buttons or input field.</p>
+                </div>
+                <div class="bg-blue-900/50 p-4 rounded-lg">
+                    <div class="text-cyan-300 font-bold mb-2">2. LAUNCH THE ROCKET</div>
+                    <p class="text-sm">Press the LAUNCH button to send the astronaut on a journey through space.</p>
+                </div>
+                <div class="bg-blue-900/50 p-4 rounded-lg">
+                    <div class="text-cyan-300 font-bold mb-2">3. COLLECT WINNINGS</div>
+                    <p class="text-sm">The multiplier increases as the rocket travels farther. Cash out at the right moment!</p>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Game State
-        const gameState = {
-            balance: 1000.00,
-            currentBet: 0,
-            currentMultiplier: 1.00,
-            isPlaying: false,
-            isBetPlaced: false,
-            isAutoBet: false,
-            crashPoint: 0,
-            countdown: 5,
-            countdownInterval: null,
-            animationId: null,
-            roundsPlayed: 0,
-            lastWin: 0
-        };
-
-        // DOM Elements
-        const balanceElement = document.getElementById('balance');
-        const multiplierElement = document.getElementById('multiplier');
-        const countdownTimer = document.getElementById('countdownTimer');
-        const statusMessage = document.getElementById('statusMessage');
-        const placeBetBtn = document.getElementById('placeBetBtn');
-        const cashoutBtn = document.getElementById('cashoutBtn');
-        const autoBetBtn = document.getElementById('autoBetBtn');
-        const betAmountInput = document.getElementById('betAmount');
-        const currentBetElement = document.getElementById('currentBet');
-        const potentialWinElement = document.getElementById('potentialWin');
-        const lastWinElement = document.getElementById('lastWin');
-        const roundsPlayedElement = document.getElementById('roundsPlayed');
-        const spaceman = document.getElementById('spaceman');
-        const rocketFlame = document.getElementById('rocketFlame');
-        const historyList = document.getElementById('historyList');
-        const betButtons = document.querySelectorAll('.bet-button');
-        const starsContainer = document.getElementById('stars');
-
-        // Initialize stars
-        function createStars() {
-            for (let i = 0; i < 100; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.width = Math.random() * 2 + 'px';
-                star.style.height = star.style.width;
-                star.style.animationDelay = Math.random() * 3 + 's';
-                starsContainer.appendChild(star);
-            }
-        }
-
-        // Generate crash point
-        function generateCrashPoint() {
-            const rand = Math.random();
-            if (rand < 0.5) return 1 + Math.random();
-            if (rand < 0.75) return 2 + Math.random() * 3;
-            if (rand < 0.9) return 5 + Math.random() * 15;
-            if (rand < 0.98) return 20 + Math.random() * 80;
-            return 100 + Math.random() * 4900;
-        }
-
-        // Start countdown
-        function startCountdown() {
-            gameState.countdown = 5;
-            gameState.isBetPlaced = false;
-            gameState.currentBet = 0;
-            
-            updateUI();
-            countdownTimer.textContent = gameState.countdown;
-            statusMessage.textContent = "Place your bet before countdown ends!";
-            statusMessage.style.color = "#ffcc00";
-            
-            rocketFlame.classList.remove('active');
-            
-            gameState.countdownInterval = setInterval(() => {
-                gameState.countdown--;
-                countdownTimer.textContent = gameState.countdown;
-                
-                if (gameState.countdown <= 0) {
-                    clearInterval(gameState.countdownInterval);
-                    startFlight();
-                }
-            }, 1000);
-        }
-
-        // Start flight
-        function startFlight() {
-            if (!gameState.isBetPlaced) {
-                if (gameState.isAutoBet) {
-                    placeBet();
-                } else {
-                    statusMessage.textContent = "No bet placed! Starting new round...";
-                    setTimeout(startCountdown, 2000);
-                    return;
-                }
-            }
-            
-            gameState.isPlaying = true;
-            gameState.crashPoint = generateCrashPoint();
-            gameState.currentMultiplier = 1.00;
-            
-            rocketFlame.classList.add('active');
-            statusMessage.textContent = "Spaceman is flying! Cash out before crash!";
-            statusMessage.style.color = "#00ffcc";
-            cashoutBtn.disabled = false;
-            
-            animateMultiplier();
-        }
-
-        // Animate multiplier
-        function animateMultiplier() {
-            let lastTime = null;
-            const baseSpeed = 0.02;
-            
-            function step(timestamp) {
-                if (!lastTime) lastTime = timestamp;
-                const delta = timestamp - lastTime;
-                lastTime = timestamp;
-                
-                const speed = baseSpeed * (1 - gameState.currentMultiplier / 200);
-                gameState.currentMultiplier += speed * (delta / 16);
-                
-                multiplierElement.textContent = gameState.currentMultiplier.toFixed(2) + 'x';
-                potentialWinElement.textContent = (gameState.currentBet * gameState.currentMultiplier).toFixed(2);
-                
-                if (gameState.currentMultiplier >= gameState.crashPoint) {
-                    crash();
-                    return;
-                }
-                
-                if (gameState.isPlaying) {
-                    gameState.animationId = requestAnimationFrame(step);
-                }
-            }
-            
-            gameState.animationId = requestAnimationFrame(step);
-        }
-
-        // Place bet
-        function placeBet() {
-            if (gameState.countdown <= 0) {
-                statusMessage.textContent = "Too late! Wait for next round.";
-                statusMessage.style.color = "#ff3333";
-                return;
-            }
-            
-            const betAmount = parseFloat(betAmountInput.value);
-            if (isNaN(betAmount) || betAmount < 1 || betAmount > gameState.balance) {
-                statusMessage.textContent = "Invalid bet amount!";
-                statusMessage.style.color = "#ff3333";
-                return;
-            }
-            
-            gameState.currentBet = betAmount;
-            gameState.isBetPlaced = true;
-            gameState.balance -= betAmount;
-            
-            statusMessage.textContent = "Bet placed! Waiting for launch...";
-            statusMessage.style.color = "#00cc66";
-            updateUI();
-        }
-
-        // Cash out
-        function cashOut() {
-            if (!gameState.isPlaying) return;
-            
-            const winAmount = gameState.currentBet * gameState.currentMultiplier;
-            gameState.balance += winAmount;
-            gameState.lastWin = winAmount - gameState.currentBet;
-            gameState.roundsPlayed++;
-            
-            addToHistory(gameState.currentMultiplier, true);
-            endRound("Cashed out at " + gameState.currentMultiplier.toFixed(2) + "x!");
-            
-            setTimeout(startCountdown, 3000);
-        }
-
-        // Crash
-        function crash() {
-            multiplierElement.textContent = 'CRASH! ' + gameState.currentMultiplier.toFixed(2) + 'x';
-            multiplierElement.style.color = '#ff3333';
-            
-            addToHistory(gameState.currentMultiplier, false);
-            gameState.roundsPlayed++;
-            
-            setTimeout(() => {
-                endRound("Crashed at " + gameState.currentMultiplier.toFixed(2) + "x!");
-                setTimeout(startCountdown, 3000);
-            }, 3000);
-        }
-
-        // End round
-        function endRound(message) {
-            gameState.isPlaying = false;
-            gameState.isBetPlaced = false;
-            cashoutBtn.disabled = true;
-            
-            if (gameState.animationId) {
-                cancelAnimationFrame(gameState.animationId);
-            }
-            
-            rocketFlame.classList.remove('active');
-            statusMessage.textContent = message;
-            statusMessage.style.color = "#ffcc00";
-            
-            updateUI();
-        }
-
-        // Add to history
-        function addToHistory(multiplier, isCashout) {
-            const historyItem = document.createElement('div');
-            
-            let className = 'low';
-            if (multiplier >= 10) className = 'high';
-            else if (multiplier >= 2) className = 'medium';
-            
-            historyItem.className = `history-item ${className}`;
-            historyItem.innerHTML = `<i class="fas ${isCashout ? 'fa-dollar-sign' : 'fa-rocket'}"></i> ${multiplier.toFixed(2)}x`;
-            
-            historyList.insertBefore(historyItem, historyList.firstChild);
-            
-            if (historyList.children.length > 10) {
-                historyList.removeChild(historyList.lastChild);
-            }
-        }
-
-        // Update UI
-        function updateUI() {
-            balanceElement.textContent = gameState.balance.toFixed(2);
-            currentBetElement.textContent = gameState.currentBet.toFixed(2);
-            potentialWinElement.textContent = (gameState.currentBet * gameState.currentMultiplier).toFixed(2);
-            lastWinElement.textContent = gameState.lastWin.toFixed(2);
-            roundsPlayedElement.textContent = gameState.roundsPlayed;
-            
-            placeBetBtn.disabled = gameState.countdown <= 0 || gameState.isBetPlaced;
-            autoBetBtn.textContent = gameState.isAutoBet ? 
-                'AUTO BET: ON' : 'AUTO BET: OFF';
-        }
-
-        // Event Listeners
-        placeBetBtn.addEventListener('click', placeBet);
-        cashoutBtn.addEventListener('click', cashOut);
+        // Game state
+        let balance = 1000;
+        let betAmount = 10;
+        let isSpinning = false;
+        let gameResult = null;
+        let autoPlay = false;
+        let autoPlayCount = 0;
+        let gameHistory = [];
+        let totalBets = 0;
+        let totalWins = 0;
+        let highestMultiplier = 0;
         
-        autoBetBtn.addEventListener('click', function() {
-            gameState.isAutoBet = !gameState.isAutoBet;
-            updateUI();
-        });
-
-        betButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const betValue = parseFloat(this.getAttribute('data-bet'));
-                betAmountInput.value = betValue.toFixed(2);
-                
-                betButtons.forEach(btn => btn.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-
+        // DOM elements
+        const balanceElement = document.getElementById('balance');
+        const betInput = document.getElementById('bet-input');
+        const spinButton = document.getElementById('spin-btn');
+        const multiplierDisplay = document.getElementById('multiplier-display');
+        const multiplierValue = document.getElementById('multiplier-value');
+        const winDisplay = document.getElementById('win-display');
+        const winAmount = document.getElementById('win-amount');
+        const historyContainer = document.getElementById('history-container');
+        const stopAutoButton = document.getElementById('stop-auto');
+        const totalBetsElement = document.getElementById('total-bets');
+        const totalWinsElement = document.getElementById('total-wins');
+        const highestMultiplierElement = document.getElementById('highest-multiplier');
+        
         // Initialize game
-        function init() {
-            createStars();
-            updateUI();
-            betButtons[2].classList.add('active');
-            startCountdown();
+        function initGame() {
+            updateBalance();
+            setupEventListeners();
         }
-
-        // Start game
-        window.addEventListener('load', init);
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Bet amount buttons
+            document.querySelectorAll('.bet-amount-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const amount = parseInt(button.getAttribute('data-bet'));
+                    setBetAmount(amount);
+                });
+            });
+            
+            // Bet input controls
+            document.getElementById('increase-bet').addEventListener('click', () => {
+                setBetAmount(Math.min(betAmount + 1, 1000));
+            });
+            
+            document.getElementById('decrease-bet').addEventListener('click', () => {
+                setBetAmount(Math.max(betAmount - 1, 1));
+            });
+            
+            betInput.addEventListener('change', () => {
+                let value = parseInt(betInput.value);
+                if (isNaN(value) || value < 1) value = 1;
+                if (value > 1000) value = 1000;
+                setBetAmount(value);
+            });
+            
+            // Spin button
+            spinButton.addEventListener('click', spinWheel);
+            
+            // Auto play buttons
+            document.querySelectorAll('.auto-play-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const count = parseInt(button.getAttribute('data-count'));
+                    handleAutoPlay(count);
+                });
+            });
+            
+            // Stop auto play button
+            stopAutoButton.addEventListener('click', stopAutoPlay);
+        }
+        
+        // Set bet amount
+        function setBetAmount(amount) {
+            betAmount = amount;
+            betInput.value = betAmount;
+        }
+        
+        // Update balance display
+        function updateBalance() {
+            balanceElement.textContent = balance;
+        }
+        
+        // Update stats display
+        function updateStats() {
+            totalBetsElement.textContent = totalBets;
+            totalWinsElement.textContent = totalWins;
+            highestMultiplierElement.textContent = highestMultiplier.toFixed(2) + 'x';
+        }
+        
+        // Spin the wheel
+        function spinWheel() {
+            if (isSpinning || balance < betAmount) return;
+            
+            isSpinning = true;
+            totalBets++;
+            balance -= betAmount;
+            updateBalance();
+            
+            gameResult = null;
+            multiplierDisplay.classList.add('hidden');
+            winDisplay.classList.add('hidden');
+            
+            spinButton.disabled = true;
+            spinButton.classList.add('spinning');
+            
+            // Simulate spin animation and result
+            setTimeout(() => {
+                const randomMultiplier = Math.random() > 0.85 ? 
+                    Math.floor(Math.random() * 500) + 10 : 
+                    Math.random() > 0.5 ? 
+                        Math.floor(Math.random() * 10) + 1 : 
+                        Math.random() * 5;
+                
+                const winAmountValue = Math.floor(betAmount * randomMultiplier);
+                
+                balance += winAmountValue;
+                if (winAmountValue > 0) totalWins++;
+                if (randomMultiplier > highestMultiplier) highestMultiplier = randomMultiplier;
+                
+                gameResult = { multiplier: randomMultiplier, winAmount: winAmountValue };
+                gameHistory.unshift(randomMultiplier);
+                if (gameHistory.length > 5) gameHistory.pop();
+                
+                updateBalance();
+                updateStats();
+                updateHistoryDisplay();
+                
+                // Show result
+                multiplierValue.textContent = randomMultiplier.toFixed(2);
+                winAmount.textContent = winAmountValue;
+                
+                multiplierDisplay.classList.remove('hidden');
+                winDisplay.classList.remove('hidden');
+                
+                isSpinning = false;
+                spinButton.disabled = false;
+                spinButton.classList.remove('spinning');
+                
+                if (autoPlay && autoPlayCount > 0) {
+                    autoPlayCount--;
+                    if (autoPlayCount > 0) {
+                        setTimeout(spinWheel, 1000);
+                    } else {
+                        stopAutoPlay();
+                    }
+                }
+            }, 2000);
+        }
+        
+        // Handle auto play
+        function handleAutoPlay(count) {
+            autoPlayCount = count;
+            autoPlay = true;
+            stopAutoButton.classList.remove('hidden');
+            
+            if (!isSpinning) {
+                spinWheel();
+            }
+        }
+        
+        // Stop auto play
+        function stopAutoPlay() {
+            autoPlay = false;
+            autoPlayCount = 0;
+            stopAutoButton.classList.add('hidden');
+        }
+        
+        // Update history display
+        function updateHistoryDisplay() {
+            historyContainer.innerHTML = '';
+            
+            for (let i = 0; i < 5; i++) {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'bg-blue-900/50 rounded p-2 text-center';
+                
+                if (i < gameHistory.length) {
+                    const value = gameHistory[i];
+                    historyItem.textContent = value.toFixed(2) + 'x';
+                    
+                    // Color code based on multiplier value
+                    if (value >= 10) {
+                        historyItem.classList.add('bg-green-700/50');
+                    } else if (value >= 5) {
+                        historyItem.classList.add('bg-yellow-700/50');
+                    }
+                } else {
+                    historyItem.textContent = '-';
+                }
+                
+                historyContainer.appendChild(historyItem);
+            }
+        }
+        
+        // Initialize the game when page loads
+        window.addEventListener('DOMContentLoaded', initGame);
     </script>
 </body>
 </html>
