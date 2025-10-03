@@ -154,6 +154,15 @@
             transition: transform 0.3s ease;
         }
 
+        .spaceman.flying {
+            animation: fly 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes fly {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-10px); }
+        }
+
         .rocket-flame {
             position: absolute;
             bottom: -20px;
@@ -163,8 +172,12 @@
             height: 60px;
             background: linear-gradient(to bottom, #ff9900, #ff3300);
             border-radius: 50% 50% 20px 20px;
-            opacity: 0.8;
+            opacity: 0;
             animation: flame 0.5s infinite alternate;
+        }
+
+        .rocket-flame.active {
+            opacity: 0.8;
         }
 
         @keyframes flame {
@@ -201,10 +214,16 @@
             100% { transform: scale(1); }
         }
 
-        .game-controls {
+        .countdown-timer {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #ffcc00;
+            text-shadow: 0 0 20px #ffcc00;
+            margin: 20px 0;
+            min-height: 80px;
             display: flex;
-            gap: 15px;
-            margin-top: 20px;
+            align-items: center;
+            justify-content: center;
         }
 
         .bet-panel {
@@ -305,15 +324,23 @@
             gap: 10px;
         }
 
-        .btn-play {
+        .btn-bet {
             background: linear-gradient(135deg, #00cc66, #00aa44);
             color: white;
             box-shadow: 0 5px 15px rgba(0, 204, 102, 0.3);
         }
 
-        .btn-play:hover {
+        .btn-bet:hover:not(:disabled) {
             background: linear-gradient(135deg, #00dd77, #00bb55);
             transform: translateY(-2px);
+        }
+
+        .btn-bet:disabled {
+            background: #666;
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .btn-cashout {
@@ -322,7 +349,7 @@
             box-shadow: 0 5px 15px rgba(255, 204, 0, 0.3);
         }
 
-        .btn-cashout:hover {
+        .btn-cashout:hover:not(:disabled) {
             background: linear-gradient(135deg, #ffdd44, #ffaa00);
             transform: translateY(-2px);
         }
@@ -422,13 +449,6 @@
             line-height: 1.5;
         }
 
-        .timer {
-            font-size: 18px;
-            margin: 15px 0;
-            color: #ffcc00;
-            text-align: center;
-        }
-
         .probability-bar {
             height: 10px;
             background: rgba(255, 255, 255, 0.1);
@@ -443,6 +463,14 @@
             border-radius: 5px;
             width: 30%;
             transition: width 0.5s ease;
+        }
+
+        .status-message {
+            font-size: 1.2rem;
+            margin: 15px 0;
+            color: #ffcc00;
+            text-align: center;
+            min-height: 30px;
         }
 
         /* Responsive */
@@ -469,6 +497,10 @@
             .multiplier-display {
                 font-size: 3.5rem;
             }
+            
+            .countdown-timer {
+                font-size: 2.5rem;
+            }
         }
     </style>
 </head>
@@ -492,18 +524,15 @@
         <div class="game-area">
             <div class="game-screen">
                 <div class="spaceman-container">
-                    <div class="spaceman"></div>
-                    <div class="rocket-flame"></div>
+                    <div class="spaceman" id="spaceman"></div>
+                    <div class="rocket-flame" id="rocketFlame"></div>
                 </div>
                 
+                <div class="countdown-timer" id="countdownTimer">5</div>
                 <div class="multiplier-display" id="multiplier">1.00x</div>
-                
-                <div class="timer" id="timer">Place your bet to start</div>
+                <div class="status-message" id="statusMessage">Place your bet before countdown ends!</div>
                 
                 <div class="game-controls">
-                    <button class="btn btn-play" id="playBtn">
-                        <i class="fas fa-play"></i> Start Round
-                    </button>
                     <button class="btn btn-cashout" id="cashoutBtn" disabled>
                         <i class="fas fa-dollar-sign"></i> Cashout
                     </button>
@@ -533,11 +562,11 @@
                     <div class="panel-title">
                         <i class="fas fa-gamepad"></i> Game Controls
                     </div>
-                    <button class="btn btn-play" id="autoPlayBtn">
-                        <i class="fas fa-robot"></i> Auto Play
+                    <button class="btn btn-bet" id="placeBetBtn">
+                        <i class="fas fa-rocket"></i> Place Bet
                     </button>
-                    <button class="btn" id="historyBtn" style="background: rgba(255,255,255,0.1); color: white;">
-                        <i class="fas fa-history"></i> Game History
+                    <button class="btn" id="autoBetBtn" style="background: rgba(255,255,255,0.1); color: white;">
+                        <i class="fas fa-robot"></i> Auto Bet
                     </button>
                 </div>
                 
@@ -574,7 +603,7 @@
         <div class="game-info">
             <div class="info-card">
                 <h3>How to Play</h3>
-                <p>Place a bet and watch the multiplier increase from 1.00x. Cash out at any time to multiply your bet. The higher the multiplier, the more you win, but the risk increases as the multiplier can crash at any moment.</p>
+                <p>Place your bet during the 5-second countdown. When countdown reaches zero, Spaceman will launch and the multiplier will start increasing. Cash out at any time to secure your winnings before it crashes!</p>
             </div>
             <div class="info-card">
                 <h3>Multiplier Probability</h3>
@@ -585,7 +614,7 @@
             </div>
             <div class="info-card">
                 <h3>About Spaceman</h3>
-                <p>Spaceman is a crash game where players bet on a multiplier that increases over time. The goal is to cash out before the multiplier crashes. Inspired by Pragmatic Play's popular game.</p>
+                <p>Spaceman is a crash game where players bet during countdown and cash out during flight. The goal is to cash out before the multiplier crashes. Inspired by Pragmatic Play's popular game.</p>
             </div>
         </div>
     </div>
@@ -597,21 +626,24 @@
             currentBet: 0,
             currentMultiplier: 1.00,
             isPlaying: false,
-            isAutoPlay: false,
+            isBetPlaced: false,
+            isAutoBet: false,
             roundHistory: [],
             crashPoint: 0,
-            gameInterval: null,
+            countdown: 5,
+            countdownInterval: null,
+            animationId: null,
             roundsPlayed: 0,
-            lastWin: 0,
-            animationId: null
+            lastWin: 0
         };
 
         // DOM Elements
         const balanceElement = document.getElementById('balance');
         const multiplierElement = document.getElementById('multiplier');
-        const timerElement = document.getElementById('timer');
+        const countdownTimer = document.getElementById('countdownTimer');
+        const statusMessage = document.getElementById('statusMessage');
         const historyList = document.getElementById('historyList');
-        const playBtn = document.getElementById('playBtn');
+        const placeBetBtn = document.getElementById('placeBetBtn');
         const cashoutBtn = document.getElementById('cashoutBtn');
         const betAmountInput = document.getElementById('betAmount');
         const currentBetElement = document.getElementById('currentBet');
@@ -621,7 +653,9 @@
         const probabilityFill = document.getElementById('probabilityFill');
         const starsContainer = document.getElementById('stars');
         const betButtons = document.querySelectorAll('.bet-button');
-        const autoPlayBtn = document.getElementById('autoPlayBtn');
+        const autoBetBtn = document.getElementById('autoBetBtn');
+        const spaceman = document.getElementById('spaceman');
+        const rocketFlame = document.getElementById('rocketFlame');
 
         // Initialize stars
         function createStars() {
@@ -646,87 +680,99 @@
             }
         }
 
-        // Generate crash point using realistic distribution (mirip asli)
+        // Generate crash point using realistic distribution
         function generateCrashPoint() {
-            // Sistem yang lebih mirip dengan Spaceman asli
             const rand = Math.random();
             
-            // Probabilitas berdasarkan range multiplier
             if (rand < 0.50) {
-                // 50% kemungkinan crash di 1x-2x
                 return 1 + Math.random();
             } else if (rand < 0.75) {
-                // 25% kemungkinan crash di 2x-5x
                 return 2 + Math.random() * 3;
             } else if (rand < 0.90) {
-                // 15% kemungkinan crash di 5x-20x
                 return 5 + Math.random() * 15;
             } else if (rand < 0.98) {
-                // 8% kemungkinan crash di 20x-100x
                 return 20 + Math.random() * 80;
             } else {
-                // 2% kemungkinan crash di 100x-5000x
                 return 100 + Math.random() * 4900;
             }
         }
 
-        // Start a new round
-        function startRound() {
-            if (gameState.isPlaying) return;
+        // Start countdown
+        function startCountdown() {
+            gameState.countdown = 5;
+            gameState.isBetPlaced = false;
+            gameState.currentBet = 0;
+            updateUI();
             
-            const betAmount = parseFloat(betAmountInput.value);
-            if (isNaN(betAmount) || betAmount < 1 || betAmount > gameState.balance) {
-                alert('Invalid bet amount!');
+            countdownTimer.textContent = gameState.countdown;
+            statusMessage.textContent = "Place your bet before countdown ends!";
+            statusMessage.style.color = "#ffcc00";
+            
+            // Reset Spaceman
+            spaceman.classList.remove('flying');
+            rocketFlame.classList.remove('active');
+            multiplierElement.textContent = "1.00x";
+            multiplierElement.style.color = "#00ffcc";
+            
+            gameState.countdownInterval = setInterval(() => {
+                gameState.countdown--;
+                countdownTimer.textContent = gameState.countdown;
+                
+                if (gameState.countdown <= 0) {
+                    clearInterval(gameState.countdownInterval);
+                    startFlight();
+                }
+            }, 1000);
+        }
+
+        // Start flight after countdown
+        function startFlight() {
+            if (!gameState.isBetPlaced) {
+                statusMessage.textContent = "No bet placed! Starting new round...";
+                setTimeout(startCountdown, 2000);
                 return;
             }
             
             gameState.isPlaying = true;
-            gameState.currentBet = betAmount;
-            gameState.currentMultiplier = 1.00;
             gameState.crashPoint = generateCrashPoint();
-            gameState.balance -= betAmount;
-            gameState.roundsPlayed++;
+            gameState.currentMultiplier = 1.00;
             
-            updateUI();
-            playBtn.disabled = true;
+            // Start flight animation
+            spaceman.classList.add('flying');
+            rocketFlame.classList.add('active');
+            statusMessage.textContent = "Spaceman is flying! Cash out before crash!";
+            statusMessage.style.color = "#00ffcc";
+            
             cashoutBtn.disabled = false;
-            timerElement.textContent = "Multiplier increasing...";
             
-            // Start multiplier animation dengan sistem yang lebih smooth
+            // Start multiplier animation
             animateMultiplier();
         }
 
-        // Animate multiplier increasing dengan sistem yang lebih natural
+        // Animate multiplier increasing
         function animateMultiplier() {
             let startTime = null;
-            const baseSpeed = 0.02; // Kecepatan dasar
+            const baseSpeed = 0.02;
             let currentSpeed = baseSpeed;
             
             function step(timestamp) {
                 if (!startTime) startTime = timestamp;
-                const elapsed = timestamp - startTime;
                 
-                // Hitung multiplier dengan acceleration yang natural
-                // Semakin tinggi multiplier, semakin lambat naiknya (seperti asli)
                 const accelerationFactor = Math.max(0.1, 1 - (gameState.currentMultiplier / 100));
                 currentSpeed = baseSpeed * accelerationFactor;
                 
                 gameState.currentMultiplier += currentSpeed;
                 
-                // Update display
                 multiplierElement.textContent = gameState.currentMultiplier.toFixed(2) + 'x';
                 potentialWinElement.textContent = (gameState.currentBet * gameState.currentMultiplier).toFixed(2);
                 
-                // Update probability bar
                 updateProbabilityBar();
                 
-                // Check for crash dengan sistem yang lebih smooth
                 if (gameState.currentMultiplier >= gameState.crashPoint) {
                     crash();
                     return;
                 }
                 
-                // Continue animation if still playing
                 if (gameState.isPlaying) {
                     gameState.animationId = requestAnimationFrame(step);
                 }
@@ -735,67 +781,83 @@
             gameState.animationId = requestAnimationFrame(step);
         }
 
-        // Cash out current round
+        // Place bet
+        function placeBet() {
+            if (gameState.countdown <= 0) {
+                statusMessage.textContent = "Too late! Wait for next round.";
+                statusMessage.style.color = "#ff3333";
+                return;
+            }
+            
+            const betAmount = parseFloat(betAmountInput.value);
+            if (isNaN(betAmount) || betAmount < 1 || betAmount > gameState.balance) {
+                statusMessage.textContent = "Invalid bet amount!";
+                statusMessage.style.color = "#ff3333";
+                return;
+            }
+            
+            gameState.currentBet = betAmount;
+            gameState.isBetPlaced = true;
+            gameState.balance -= betAmount;
+            
+            statusMessage.textContent = "Bet placed! Waiting for launch...";
+            statusMessage.style.color = "#00cc66";
+            updateUI();
+        }
+
+        // Cash out
         function cashOut() {
             if (!gameState.isPlaying) return;
             
             const winAmount = gameState.currentBet * gameState.currentMultiplier;
             gameState.balance += winAmount;
             gameState.lastWin = winAmount - gameState.currentBet;
+            gameState.roundsPlayed++;
             
-            // Add to history
             addToHistory(gameState.currentMultiplier, true);
-            
             endRound("Cashed out at " + gameState.currentMultiplier.toFixed(2) + "x!");
             
-            // If auto play is enabled, start next round
-            if (gameState.isAutoPlay) {
-                setTimeout(startRound, 2000);
-            }
+            // Start new countdown
+            setTimeout(startCountdown, 3000);
         }
 
-        // End the round (crash or cashout)
-        function endRound(message = "Round ended") {
-            gameState.isPlaying = false;
-            playBtn.disabled = false;
-            cashoutBtn.disabled = true;
-            gameState.currentBet = 0;
-            
-            if (gameState.animationId) {
-                cancelAnimationFrame(gameState.animationId);
-                gameState.animationId = null;
-            }
-            
-            timerElement.textContent = message;
-            updateUI();
-        }
-
-        // Crash the round dengan efek yang lebih dramatis
+        // Crash
         function crash() {
             multiplierElement.textContent = 'CRASH! ' + gameState.currentMultiplier.toFixed(2) + 'x';
             multiplierElement.style.color = '#ff3333';
-            multiplierElement.style.textShadow = '0 0 20px #ff3333, 0 0 40px #ff3333';
             
-            // Add to history
             addToHistory(gameState.currentMultiplier, false);
+            gameState.roundsPlayed++;
             
             setTimeout(() => {
-                multiplierElement.style.color = '#00ffcc';
-                multiplierElement.style.textShadow = '0 0 20px #00ffcc, 0 0 40px #00ffcc';
                 endRound("Crashed at " + gameState.currentMultiplier.toFixed(2) + "x!");
-                
-                // If auto play is enabled, start next round
-                if (gameState.isAutoPlay) {
-                    setTimeout(startRound, 2000);
-                }
+                // Start new countdown
+                setTimeout(startCountdown, 3000);
             }, 3000);
         }
 
-        // Add multiplier to history
+        // End round
+        function endRound(message) {
+            gameState.isPlaying = false;
+            gameState.isBetPlaced = false;
+            cashoutBtn.disabled = true;
+            
+            if (gameState.animationId) {
+                cancelAnimationFrame(gameState.animationId);
+            }
+            
+            spaceman.classList.remove('flying');
+            rocketFlame.classList.remove('active');
+            statusMessage.textContent = message;
+            statusMessage.style.color = "#ffcc00";
+            
+            updateUI();
+        }
+
+        // Add to history
         function addToHistory(multiplier, isCashout) {
             const historyItem = document.createElement('div');
             
-            // Determine multiplier category for styling
             if (multiplier >= 10) {
                 historyItem.classList.add('history-item', 'high');
             } else if (multiplier >= 2) {
@@ -807,15 +869,12 @@
             const icon = isCashout ? 'fa-dollar-sign' : 'fa-rocket';
             historyItem.innerHTML = `<i class="fas ${icon}"></i> ${multiplier.toFixed(2)}x`;
             
-            // Add to beginning of list
             historyList.insertBefore(historyItem, historyList.firstChild);
             
-            // Limit history to 20 items
             if (historyList.children.length > 20) {
                 historyList.removeChild(historyList.lastChild);
             }
             
-            // Add to game state history
             gameState.roundHistory.unshift({
                 multiplier: multiplier,
                 cashout: isCashout,
@@ -823,15 +882,14 @@
             });
         }
 
-        // Update probability bar based on current multiplier
+        // Update probability bar
         function updateProbabilityBar() {
             const multiplier = gameState.currentMultiplier;
-            // Probability decreases exponentially as multiplier increases
             const probability = Math.min(100, 100 / Math.pow(multiplier, 0.7));
             probabilityFill.style.width = `${probability}%`;
         }
 
-        // Update all UI elements
+        // Update UI
         function updateUI() {
             balanceElement.textContent = gameState.balance.toFixed(2);
             currentBetElement.textContent = gameState.currentBet.toFixed(2);
@@ -839,28 +897,21 @@
             lastWinElement.textContent = gameState.lastWin.toFixed(2);
             roundsPlayedElement.textContent = gameState.roundsPlayed;
             
-            // Update button states
+            placeBetBtn.disabled = gameState.countdown <= 0 || gameState.isBetPlaced;
             cashoutBtn.disabled = !gameState.isPlaying;
-            playBtn.innerHTML = gameState.isPlaying ? 
-                '<i class="fas fa-pause"></i> Playing...' : 
-                '<i class="fas fa-play"></i> Start Round';
-                
-            autoPlayBtn.innerHTML = gameState.isAutoPlay ?
-                '<i class="fas fa-robot"></i> Auto Play ON' :
-                '<i class="fas fa-robot"></i> Auto Play';
+            
+            autoBetBtn.innerHTML = gameState.isAutoBet ?
+                '<i class="fas fa-robot"></i> Auto Bet ON' :
+                '<i class="fas fa-robot"></i> Auto Bet';
         }
 
         // Event Listeners
-        playBtn.addEventListener('click', startRound);
+        placeBetBtn.addEventListener('click', placeBet);
         cashoutBtn.addEventListener('click', cashOut);
         
-        autoPlayBtn.addEventListener('click', function() {
-            gameState.isAutoPlay = !gameState.isAutoPlay;
+        autoBetBtn.addEventListener('click', function() {
+            gameState.isAutoBet = !gameState.isAutoBet;
             updateUI();
-            
-            if (gameState.isAutoPlay && !gameState.isPlaying) {
-                startRound();
-            }
         });
 
         // Bet amount buttons
@@ -869,7 +920,6 @@
                 const betValue = parseFloat(this.getAttribute('data-bet'));
                 betAmountInput.value = betValue.toFixed(2);
                 
-                // Update active state
                 betButtons.forEach(btn => btn.classList.remove('active'));
                 this.classList.add('active');
             });
@@ -881,14 +931,17 @@
             updateUI();
             
             // Set initial active bet button
-            betButtons[2].classList.add('active'); // $10 button
+            betButtons[2].classList.add('active');
             
-            // Add some sample history
+            // Add sample history
             addToHistory(1.45, false);
             addToHistory(2.33, true);
             addToHistory(8.76, false);
             addToHistory(1.12, false);
             addToHistory(15.43, true);
+            
+            // Start first countdown
+            startCountdown();
         }
 
         // Start the game when page loads
