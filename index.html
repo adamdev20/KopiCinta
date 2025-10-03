@@ -498,7 +498,7 @@
                 
                 <div class="multiplier-display" id="multiplier">1.00x</div>
                 
-                <div class="timer" id="timer">Next round in: 5s</div>
+                <div class="timer" id="timer">Place your bet to start</div>
                 
                 <div class="game-controls">
                     <button class="btn btn-play" id="playBtn">
@@ -601,9 +601,9 @@
             roundHistory: [],
             crashPoint: 0,
             gameInterval: null,
-            multiplierSpeed: 0.01,
             roundsPlayed: 0,
-            lastWin: 0
+            lastWin: 0,
+            animationId: null
         };
 
         // DOM Elements
@@ -646,13 +646,28 @@
             }
         }
 
-        // Generate crash point using exponential distribution
+        // Generate crash point using realistic distribution (mirip asli)
         function generateCrashPoint() {
-            // Higher multipliers are exponentially less likely
+            // Sistem yang lebih mirip dengan Spaceman asli
             const rand = Math.random();
-            // Using formula that makes high multipliers rare
-            const crashPoint = Math.max(1.00, (1 / (1 - rand)) * 0.02);
-            return Math.min(crashPoint, 5000.00); // Cap at 5000x
+            
+            // Probabilitas berdasarkan range multiplier
+            if (rand < 0.50) {
+                // 50% kemungkinan crash di 1x-2x
+                return 1 + Math.random();
+            } else if (rand < 0.75) {
+                // 25% kemungkinan crash di 2x-5x
+                return 2 + Math.random() * 3;
+            } else if (rand < 0.90) {
+                // 15% kemungkinan crash di 5x-20x
+                return 5 + Math.random() * 15;
+            } else if (rand < 0.98) {
+                // 8% kemungkinan crash di 20x-100x
+                return 20 + Math.random() * 80;
+            } else {
+                // 2% kemungkinan crash di 100x-5000x
+                return 100 + Math.random() * 4900;
+            }
         }
 
         // Start a new round
@@ -675,26 +690,28 @@
             updateUI();
             playBtn.disabled = true;
             cashoutBtn.disabled = false;
+            timerElement.textContent = "Multiplier increasing...";
             
-            // Start multiplier animation
+            // Start multiplier animation dengan sistem yang lebih smooth
             animateMultiplier();
         }
 
-        // Animate multiplier increasing
+        // Animate multiplier increasing dengan sistem yang lebih natural
         function animateMultiplier() {
             let startTime = null;
-            const duration = 30000; // 30 seconds max
+            const baseSpeed = 0.02; // Kecepatan dasar
+            let currentSpeed = baseSpeed;
             
             function step(timestamp) {
                 if (!startTime) startTime = timestamp;
-                const progress = timestamp - startTime;
+                const elapsed = timestamp - startTime;
                 
-                // Calculate current multiplier with easing
-                const progressRatio = progress / duration;
-                const easeOut = 1 - Math.pow(1 - progressRatio, 3);
+                // Hitung multiplier dengan acceleration yang natural
+                // Semakin tinggi multiplier, semakin lambat naiknya (seperti asli)
+                const accelerationFactor = Math.max(0.1, 1 - (gameState.currentMultiplier / 100));
+                currentSpeed = baseSpeed * accelerationFactor;
                 
-                // Increase multiplier with accelerating speed
-                gameState.currentMultiplier = 1.00 + (gameState.crashPoint - 1.00) * easeOut;
+                gameState.currentMultiplier += currentSpeed;
                 
                 // Update display
                 multiplierElement.textContent = gameState.currentMultiplier.toFixed(2) + 'x';
@@ -703,7 +720,7 @@
                 // Update probability bar
                 updateProbabilityBar();
                 
-                // Check for crash
+                // Check for crash dengan sistem yang lebih smooth
                 if (gameState.currentMultiplier >= gameState.crashPoint) {
                     crash();
                     return;
@@ -711,11 +728,11 @@
                 
                 // Continue animation if still playing
                 if (gameState.isPlaying) {
-                    requestAnimationFrame(step);
+                    gameState.animationId = requestAnimationFrame(step);
                 }
             }
             
-            requestAnimationFrame(step);
+            gameState.animationId = requestAnimationFrame(step);
         }
 
         // Cash out current round
@@ -727,9 +744,9 @@
             gameState.lastWin = winAmount - gameState.currentBet;
             
             // Add to history
-            addToHistory(gameState.currentMultiplier);
+            addToHistory(gameState.currentMultiplier, true);
             
-            endRound();
+            endRound("Cashed out at " + gameState.currentMultiplier.toFixed(2) + "x!");
             
             // If auto play is enabled, start next round
             if (gameState.isAutoPlay) {
@@ -738,37 +755,44 @@
         }
 
         // End the round (crash or cashout)
-        function endRound() {
+        function endRound(message = "Round ended") {
             gameState.isPlaying = false;
             playBtn.disabled = false;
             cashoutBtn.disabled = true;
             gameState.currentBet = 0;
+            
+            if (gameState.animationId) {
+                cancelAnimationFrame(gameState.animationId);
+                gameState.animationId = null;
+            }
+            
+            timerElement.textContent = message;
             updateUI();
         }
 
-        // Crash the round
+        // Crash the round dengan efek yang lebih dramatis
         function crash() {
-            multiplierElement.textContent = 'CRASH!';
+            multiplierElement.textContent = 'CRASH! ' + gameState.currentMultiplier.toFixed(2) + 'x';
             multiplierElement.style.color = '#ff3333';
             multiplierElement.style.textShadow = '0 0 20px #ff3333, 0 0 40px #ff3333';
             
             // Add to history
-            addToHistory(gameState.currentMultiplier);
+            addToHistory(gameState.currentMultiplier, false);
             
             setTimeout(() => {
                 multiplierElement.style.color = '#00ffcc';
                 multiplierElement.style.textShadow = '0 0 20px #00ffcc, 0 0 40px #00ffcc';
-                endRound();
+                endRound("Crashed at " + gameState.currentMultiplier.toFixed(2) + "x!");
                 
                 // If auto play is enabled, start next round
                 if (gameState.isAutoPlay) {
                     setTimeout(startRound, 2000);
                 }
-            }, 2000);
+            }, 3000);
         }
 
         // Add multiplier to history
-        function addToHistory(multiplier) {
+        function addToHistory(multiplier, isCashout) {
             const historyItem = document.createElement('div');
             
             // Determine multiplier category for styling
@@ -780,7 +804,8 @@
                 historyItem.classList.add('history-item', 'low');
             }
             
-            historyItem.innerHTML = `<i class="fas fa-rocket"></i> ${multiplier.toFixed(2)}x`;
+            const icon = isCashout ? 'fa-dollar-sign' : 'fa-rocket';
+            historyItem.innerHTML = `<i class="fas ${icon}"></i> ${multiplier.toFixed(2)}x`;
             
             // Add to beginning of list
             historyList.insertBefore(historyItem, historyList.firstChild);
@@ -791,14 +816,18 @@
             }
             
             // Add to game state history
-            gameState.roundHistory.unshift(multiplier);
+            gameState.roundHistory.unshift({
+                multiplier: multiplier,
+                cashout: isCashout,
+                timestamp: new Date()
+            });
         }
 
         // Update probability bar based on current multiplier
         function updateProbabilityBar() {
             const multiplier = gameState.currentMultiplier;
             // Probability decreases exponentially as multiplier increases
-            const probability = Math.min(100, 100 / Math.pow(multiplier, 0.5));
+            const probability = Math.min(100, 100 / Math.pow(multiplier, 0.7));
             probabilityFill.style.width = `${probability}%`;
         }
 
@@ -853,6 +882,13 @@
             
             // Set initial active bet button
             betButtons[2].classList.add('active'); // $10 button
+            
+            // Add some sample history
+            addToHistory(1.45, false);
+            addToHistory(2.33, true);
+            addToHistory(8.76, false);
+            addToHistory(1.12, false);
+            addToHistory(15.43, true);
         }
 
         // Start the game when page loads
