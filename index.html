@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Multiplier - Spaceman Style</title>
+    <title>Spaceman Multiplier</title>
     <style>
         * {
             margin: 0;
@@ -48,7 +48,7 @@
 
         .container {
             text-align: center;
-            max-width: 800px;
+            max-width: 900px;
             padding: 20px;
             background: rgba(0, 0, 0, 0.6);
             border-radius: 20px;
@@ -79,10 +79,92 @@
             color: #fff;
         }
 
+        .content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .mascot-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .mascot {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .mascot-body {
+            width: 120px;
+            height: 160px;
+            background: linear-gradient(to bottom, #4a69ff, #1e3799);
+            border-radius: 60px 60px 50px 50px;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .mascot-head {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(to bottom, #4a69ff, #1e3799);
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .mascot-helmet {
+            width: 110px;
+            height: 60px;
+            background: #ffcc00;
+            border-radius: 50px 50px 40px 40px;
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .mascot-visor {
+            width: 80px;
+            height: 30px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .mascot-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ffcc00;
+            text-shadow: 0 0 5px rgba(255, 204, 0, 0.5);
+        }
+
+        .multiplier-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
         .multiplier-display {
             font-size: 5rem;
             font-weight: bold;
-            margin: 30px 0;
+            margin: 20px 0;
             text-shadow: 0 0 15px #00ffcc, 0 0 30px #00ffcc;
             color: #00ffcc;
             transition: all 0.3s ease;
@@ -90,6 +172,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 10px 30px;
+            border: 2px solid rgba(0, 255, 204, 0.2);
         }
 
         .multiplier-display.animate {
@@ -180,6 +266,12 @@
             font-size: 0.9rem;
         }
 
+        .probability-info {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
         footer {
             margin-top: 30px;
             font-size: 0.9rem;
@@ -193,6 +285,10 @@
                 font-size: 2rem;
             }
             
+            .content {
+                flex-direction: column;
+            }
+            
             .multiplier-display {
                 font-size: 3.5rem;
             }
@@ -201,6 +297,31 @@
                 margin: 20px;
                 padding: 15px;
             }
+            
+            .mascot {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .mascot-body {
+                width: 90px;
+                height: 120px;
+            }
+            
+            .mascot-head {
+                width: 75px;
+                height: 75px;
+            }
+            
+            .mascot-helmet {
+                width: 85px;
+                height: 45px;
+            }
+            
+            .mascot-visor {
+                width: 60px;
+                height: 22px;
+            }
         }
     </style>
 </head>
@@ -208,20 +329,34 @@
     <div class="stars" id="stars"></div>
     
     <div class="container">
-        <h1>Random Multiplier</h1>
+        <h1>Spaceman Multiplier</h1>
         
         <div class="info-box">
             <p>Angka perkalian akan berubah setiap 5 detik</p>
             <p>Range: 1.00x hingga 5000.00x</p>
+            <p class="probability-info">Semakin tinggi perkalian, semakin rendah kemungkinan muncul</p>
         </div>
         
-        <div class="timer" id="timer">Perubahan berikutnya dalam: 5 detik</div>
-        
-        <div class="multiplier-display" id="multiplier">1.00x</div>
-        
-        <div class="controls">
-            <button id="pauseBtn">Jeda</button>
-            <button id="manualBtn">Ubah Sekarang</button>
+        <div class="content">
+            <div class="mascot-container">
+                <div class="mascot">
+                    <div class="mascot-body"></div>
+                    <div class="mascot-head"></div>
+                    <div class="mascot-helmet"></div>
+                    <div class="mascot-visor"></div>
+                </div>
+                <div class="mascot-name">SPACEMAN</div>
+            </div>
+            
+            <div class="multiplier-section">
+                <div class="timer" id="timer">Perubahan berikutnya dalam: 5 detik</div>
+                <div class="multiplier-display" id="multiplier">1.00x</div>
+                
+                <div class="controls">
+                    <button id="pauseBtn">Jeda</button>
+                    <button id="manualBtn">Ubah Sekarang</button>
+                </div>
+            </div>
         </div>
         
         <div class="history">
@@ -248,6 +383,7 @@
         let timer;
         let countdown = 5;
         let history = [];
+        let currentMultiplier = 1.00;
 
         // Fungsi untuk menghasilkan bintang latar belakang
         function createStars() {
@@ -277,14 +413,68 @@
             }
         }
 
-        // Fungsi untuk menghasilkan angka random perkalian
+        // Fungsi untuk menghasilkan angka random perkalian dengan probabilitas menurun untuk nilai tinggi
         function generateRandomMultiplier() {
-            // Menghasilkan angka antara 1.00 hingga 5000.00
+            // Menggunakan distribusi eksponensial terbalik untuk membuat nilai tinggi lebih jarang
             const min = 1.00;
             const max = 5000.00;
-            const multiplier = (Math.random() * (max - min) + min).toFixed(2);
             
-            return multiplier;
+            // Membuat distribusi dengan bias terhadap nilai rendah
+            let multiplier;
+            const rand = Math.random();
+            
+            if (rand < 0.7) {
+                // 70% kemungkinan untuk nilai rendah (1.00 - 10.00)
+                multiplier = (Math.random() * 9 + 1).toFixed(2);
+            } else if (rand < 0.9) {
+                // 20% kemungkinan untuk nilai sedang (10.00 - 100.00)
+                multiplier = (Math.random() * 90 + 10).toFixed(2);
+            } else if (rand < 0.98) {
+                // 8% kemungkinan untuk nilai tinggi (100.00 - 1000.00)
+                multiplier = (Math.random() * 900 + 100).toFixed(2);
+            } else {
+                // 2% kemungkinan untuk nilai sangat tinggi (1000.00 - 5000.00)
+                multiplier = (Math.random() * 4000 + 1000).toFixed(2);
+            }
+            
+            return parseFloat(multiplier);
+        }
+
+        // Fungsi untuk animasi penghitungan dari 1.00 ke angka target
+        function animateToMultiplier(targetMultiplier) {
+            if (isPaused) return;
+            
+            const start = currentMultiplier;
+            const duration = 2000; // 2 detik animasi
+            const startTime = performance.now();
+            
+            function updateAnimation(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Menggunakan easing function untuk animasi yang lebih smooth
+                const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+                
+                currentMultiplier = start + (targetMultiplier - start) * easeOutQuart;
+                multiplierElement.textContent = `${currentMultiplier.toFixed(2)}x`;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateAnimation);
+                } else {
+                    currentMultiplier = targetMultiplier;
+                    multiplierElement.textContent = `${currentMultiplier.toFixed(2)}x`;
+                    multiplierElement.classList.add('animate');
+                    
+                    setTimeout(() => {
+                        multiplierElement.classList.remove('animate');
+                    }, 500);
+                    
+                    // Tambah ke riwayat
+                    addToHistory(targetMultiplier);
+                }
+            }
+            
+            requestAnimationFrame(updateAnimation);
         }
 
         // Fungsi untuk memperbarui tampilan perkalian
@@ -292,17 +482,7 @@
             if (isPaused) return;
             
             const newMultiplier = generateRandomMultiplier();
-            
-            // Tambah animasi
-            multiplierElement.classList.add('animate');
-            
-            setTimeout(() => {
-                multiplierElement.textContent = `${newMultiplier}x`;
-                multiplierElement.classList.remove('animate');
-            }, 250);
-            
-            // Tambah ke riwayat
-            addToHistory(newMultiplier);
+            animateToMultiplier(newMultiplier);
             
             // Reset countdown
             countdown = 5;
@@ -328,7 +508,18 @@
             
             history.forEach(multiplier => {
                 const li = document.createElement('li');
-                li.textContent = `${multiplier}x`;
+                li.textContent = `${multiplier.toFixed(2)}x`;
+                
+                // Warna berbeda berdasarkan nilai perkalian
+                if (multiplier >= 1000) {
+                    li.style.background = 'linear-gradient(to right, #ff0000, #ff9900)';
+                    li.style.color = '#fff';
+                } else if (multiplier >= 100) {
+                    li.style.background = 'linear-gradient(to right, #ffcc00, #ff6600)';
+                } else if (multiplier >= 10) {
+                    li.style.background = 'linear-gradient(to right, #00ccff, #0066ff)';
+                }
+                
                 historyList.appendChild(li);
             });
         }
