@@ -3,29 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spaceman Multiplier</title>
+    <title>Spaceman - Pragmatic Play</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #0c2461, #1e3799);
+            background: #0a0e17;
             color: white;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            position: relative;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(28, 58, 122, 0.3) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(28, 58, 122, 0.3) 0%, transparent 20%);
         }
 
         .stars {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -47,125 +46,137 @@
         }
 
         .container {
-            text-align: center;
-            max-width: 900px;
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 20px;
-            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #4a69ff, #1e3799);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 0 15px rgba(74, 105, 255, 0.5);
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, #4a69ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .balance {
+            font-weight: 700;
+            font-size: 18px;
+            color: #4a69ff;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffcc00, #ff9900);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .game-screen {
+            background: rgba(10, 14, 23, 0.8);
             border-radius: 20px;
-            box-shadow: 0 0 30px rgba(0, 0, 255, 0.5);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             position: relative;
             overflow: hidden;
-        }
-
-        .container::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
-            z-index: -1;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            text-shadow: 0 0 10px #4a69ff, 0 0 20px #4a69ff;
-            color: #fff;
-        }
-
-        .content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 30px;
-            margin: 20px 0;
-        }
-
-        .mascot-container {
-            flex: 1;
+            min-height: 500px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
         }
 
-        .mascot {
-            width: 200px;
-            height: 200px;
+        .spaceman-container {
             position: relative;
-            margin-bottom: 20px;
+            width: 300px;
+            height: 400px;
+            margin: 0 auto 30px;
         }
 
-        .mascot-body {
-            width: 120px;
-            height: 160px;
-            background: linear-gradient(to bottom, #4a69ff, #1e3799);
-            border-radius: 60px 60px 50px 50px;
+        .spaceman {
             position: absolute;
-            bottom: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300"><circle cx="100" cy="80" r="50" fill="%234a69ff"/><rect x="70" y="130" width="60" height="120" rx="30" fill="%234a69ff"/><rect x="50" y="180" width="20" height="60" rx="10" fill="%231e3799"/><rect x="130" y="180" width="20" height="60" rx="10" fill="%231e3799"/><rect x="80" y="250" width="40" height="50" rx="20" fill="%231e3799"/><circle cx="80" cy="70" r="15" fill="%23ffffff" opacity="0.7"/><circle cx="120" cy="70" r="15" fill="%23ffffff" opacity="0.7"/><circle cx="80" cy="70" r="5" fill="%230a0e17"/><circle cx="120" cy="70" r="5" fill="%230a0e17"/><path d="M90 110 Q100 120 110 110" stroke="%230a0e17" stroke-width="3" fill="none"/></svg>') center no-repeat;
+            background-size: contain;
+            filter: drop-shadow(0 0 20px rgba(74, 105, 255, 0.7));
+            transition: transform 0.3s ease;
+        }
+
+        .rocket-flame {
+            position: absolute;
+            bottom: -20px;
             left: 50%;
             transform: translateX(-50%);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .mascot-head {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(to bottom, #4a69ff, #1e3799);
-            border-radius: 50%;
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .mascot-helmet {
-            width: 110px;
+            width: 40px;
             height: 60px;
-            background: #ffcc00;
-            border-radius: 50px 50px 40px 40px;
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+            background: linear-gradient(to bottom, #ff9900, #ff3300);
+            border-radius: 50% 50% 20px 20px;
+            opacity: 0.8;
+            animation: flame 0.5s infinite alternate;
         }
 
-        .mascot-visor {
-            width: 80px;
-            height: 30px;
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 20px;
-            position: absolute;
-            top: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .mascot-name {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #ffcc00;
-            text-shadow: 0 0 5px rgba(255, 204, 0, 0.5);
-        }
-
-        .multiplier-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        @keyframes flame {
+            0% { height: 60px; opacity: 0.8; }
+            100% { height: 80px; opacity: 1; }
         }
 
         .multiplier-display {
             font-size: 5rem;
-            font-weight: bold;
+            font-weight: 900;
             margin: 20px 0;
-            text-shadow: 0 0 15px #00ffcc, 0 0 30px #00ffcc;
+            text-shadow: 0 0 20px #00ffcc, 0 0 40px #00ffcc;
             color: #00ffcc;
             transition: all 0.3s ease;
             min-height: 120px;
@@ -176,6 +187,8 @@
             border-radius: 15px;
             padding: 10px 30px;
             border: 2px solid rgba(0, 255, 204, 0.2);
+            width: 100%;
+            max-width: 400px;
         }
 
         .multiplier-display.animate {
@@ -188,139 +201,273 @@
             100% { transform: scale(1); }
         }
 
-        .info-box {
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 10px;
-            padding: 15px;
-            margin: 20px 0;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .info-box p {
-            margin: 10px 0;
-            font-size: 1.1rem;
-        }
-
-        .timer {
-            font-size: 1.2rem;
-            margin: 15px 0;
-            color: #ffcc00;
-        }
-
-        .controls {
+        .game-controls {
             display: flex;
             gap: 15px;
-            justify-content: center;
             margin-top: 20px;
         }
 
-        button {
-            background: linear-gradient(to bottom, #ffcc00, #ff9900);
-            color: #000;
-            border: none;
-            padding: 12px 25px;
-            font-size: 1.1rem;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(255, 204, 0, 0.4);
-        }
-
-        button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(255, 204, 0, 0.6);
-        }
-
-        button:active {
-            transform: translateY(1px);
-        }
-
-        .history {
-            margin-top: 30px;
-            width: 100%;
-            max-height: 200px;
-            overflow-y: auto;
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 10px;
-            padding: 15px;
-        }
-
-        .history h3 {
-            margin-bottom: 10px;
-            color: #ffcc00;
-        }
-
-        .history-list {
-            list-style-type: none;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .history-list li {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 8px 15px;
+        .bet-panel {
+            background: rgba(10, 14, 23, 0.8);
             border-radius: 20px;
-            font-size: 0.9rem;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        .probability-info {
-            margin-top: 15px;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
+        .panel-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #4a69ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        footer {
-            margin-top: 30px;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
+        .bet-amount {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .bet-input-container {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 5px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .currency {
+            color: #ffcc00;
+            font-weight: 700;
+        }
+
+        .bet-input {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 18px;
+            padding: 10px;
+            width: 100%;
+            outline: none;
+        }
+
+        .bet-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .bet-button {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 12px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
             text-align: center;
         }
 
+        .bet-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .bet-button.active {
+            background: linear-gradient(135deg, #4a69ff, #1e3799);
+            border-color: #4a69ff;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 15px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-play {
+            background: linear-gradient(135deg, #00cc66, #00aa44);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 204, 102, 0.3);
+        }
+
+        .btn-play:hover {
+            background: linear-gradient(135deg, #00dd77, #00bb55);
+            transform: translateY(-2px);
+        }
+
+        .btn-cashout {
+            background: linear-gradient(135deg, #ffcc00, #ff9900);
+            color: #000;
+            box-shadow: 0 5px 15px rgba(255, 204, 0, 0.3);
+        }
+
+        .btn-cashout:hover {
+            background: linear-gradient(135deg, #ffdd44, #ffaa00);
+            transform: translateY(-2px);
+        }
+
+        .btn-cashout:disabled {
+            background: #666;
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .game-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #4a69ff;
+            margin-top: 5px;
+        }
+
+        .history-panel {
+            background: rgba(10, 14, 23, 0.8);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .history-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .history-item.high {
+            background: linear-gradient(135deg, #ff3333, #cc0000);
+        }
+
+        .history-item.medium {
+            background: linear-gradient(135deg, #ffcc00, #ff9900);
+        }
+
+        .history-item.low {
+            background: linear-gradient(135deg, #4a69ff, #1e3799);
+        }
+
+        .game-info {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .info-card {
+            background: rgba(10, 14, 23, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .info-card h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #4a69ff;
+        }
+
+        .info-card p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.5;
+        }
+
+        .timer {
+            font-size: 18px;
+            margin: 15px 0;
+            color: #ffcc00;
+            text-align: center;
+        }
+
+        .probability-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .probability-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00cc66, #ffcc00, #ff3333);
+            border-radius: 5px;
+            width: 30%;
+            transition: width 0.5s ease;
+        }
+
         /* Responsive */
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
+        @media (max-width: 1024px) {
+            .game-area {
+                grid-template-columns: 1fr;
             }
             
-            .content {
+            .game-info {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
                 flex-direction: column;
+                gap: 15px;
+            }
+            
+            .game-stats {
+                grid-template-columns: 1fr;
             }
             
             .multiplier-display {
                 font-size: 3.5rem;
-            }
-            
-            .container {
-                margin: 20px;
-                padding: 15px;
-            }
-            
-            .mascot {
-                width: 150px;
-                height: 150px;
-            }
-            
-            .mascot-body {
-                width: 90px;
-                height: 120px;
-            }
-            
-            .mascot-head {
-                width: 75px;
-                height: 75px;
-            }
-            
-            .mascot-helmet {
-                width: 85px;
-                height: 45px;
-            }
-            
-            .mascot-visor {
-                width: 60px;
-                height: 22px;
             }
         }
     </style>
@@ -329,78 +476,164 @@
     <div class="stars" id="stars"></div>
     
     <div class="container">
-        <h1>Spaceman Multiplier</h1>
-        
-        <div class="info-box">
-            <p>Angka perkalian akan berubah setiap 5 detik</p>
-            <p>Range: 1.00x hingga 5000.00x</p>
-            <p class="probability-info">Semakin tinggi perkalian, semakin rendah kemungkinan muncul</p>
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-user-astronaut"></i>
+                </div>
+                <div class="logo-text">Spaceman</div>
+            </div>
+            <div class="user-info">
+                <div class="balance">$<span id="balance">1000.00</span></div>
+                <div class="avatar">JD</div>
+            </div>
         </div>
         
-        <div class="content">
-            <div class="mascot-container">
-                <div class="mascot">
-                    <div class="mascot-body"></div>
-                    <div class="mascot-head"></div>
-                    <div class="mascot-helmet"></div>
-                    <div class="mascot-visor"></div>
+        <div class="game-area">
+            <div class="game-screen">
+                <div class="spaceman-container">
+                    <div class="spaceman"></div>
+                    <div class="rocket-flame"></div>
                 </div>
-                <div class="mascot-name">SPACEMAN</div>
-            </div>
-            
-            <div class="multiplier-section">
-                <div class="timer" id="timer">Perubahan berikutnya dalam: 5 detik</div>
+                
                 <div class="multiplier-display" id="multiplier">1.00x</div>
                 
-                <div class="controls">
-                    <button id="pauseBtn">Jeda</button>
-                    <button id="manualBtn">Ubah Sekarang</button>
+                <div class="timer" id="timer">Next round in: 5s</div>
+                
+                <div class="game-controls">
+                    <button class="btn btn-play" id="playBtn">
+                        <i class="fas fa-play"></i> Start Round
+                    </button>
+                    <button class="btn btn-cashout" id="cashoutBtn" disabled>
+                        <i class="fas fa-dollar-sign"></i> Cashout
+                    </button>
+                </div>
+            </div>
+            
+            <div class="bet-panel">
+                <div class="bet-amount">
+                    <div class="panel-title">
+                        <i class="fas fa-coins"></i> Bet Amount
+                    </div>
+                    <div class="bet-input-container">
+                        <span class="currency">$</span>
+                        <input type="number" class="bet-input" id="betAmount" value="10.00" min="1" max="1000" step="0.5">
+                    </div>
+                    <div class="bet-buttons">
+                        <div class="bet-button" data-bet="1">$1</div>
+                        <div class="bet-button" data-bet="5">$5</div>
+                        <div class="bet-button" data-bet="10">$10</div>
+                        <div class="bet-button" data-bet="25">$25</div>
+                        <div class="bet-button" data-bet="50">$50</div>
+                        <div class="bet-button" data-bet="100">$100</div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <div class="panel-title">
+                        <i class="fas fa-gamepad"></i> Game Controls
+                    </div>
+                    <button class="btn btn-play" id="autoPlayBtn">
+                        <i class="fas fa-robot"></i> Auto Play
+                    </button>
+                    <button class="btn" id="historyBtn" style="background: rgba(255,255,255,0.1); color: white;">
+                        <i class="fas fa-history"></i> Game History
+                    </button>
+                </div>
+                
+                <div class="game-stats">
+                    <div class="stat-card">
+                        <div>Current Bet</div>
+                        <div class="stat-value">$<span id="currentBet">0.00</span></div>
+                    </div>
+                    <div class="stat-card">
+                        <div>Potential Win</div>
+                        <div class="stat-value">$<span id="potentialWin">0.00</span></div>
+                    </div>
+                    <div class="stat-card">
+                        <div>Last Win</div>
+                        <div class="stat-value">$<span id="lastWin">0.00</span></div>
+                    </div>
+                    <div class="stat-card">
+                        <div>Rounds Played</div>
+                        <div class="stat-value" id="roundsPlayed">0</div>
+                    </div>
                 </div>
             </div>
         </div>
         
-        <div class="history">
-            <h3>Riwayat Perkalian</h3>
-            <ul class="history-list" id="historyList"></ul>
+        <div class="history-panel">
+            <div class="panel-title">
+                <i class="fas fa-chart-line"></i> Recent Multipliers
+            </div>
+            <div class="history-list" id="historyList">
+                <!-- History items will be added here dynamically -->
+            </div>
+        </div>
+        
+        <div class="game-info">
+            <div class="info-card">
+                <h3>How to Play</h3>
+                <p>Place a bet and watch the multiplier increase from 1.00x. Cash out at any time to multiply your bet. The higher the multiplier, the more you win, but the risk increases as the multiplier can crash at any moment.</p>
+            </div>
+            <div class="info-card">
+                <h3>Multiplier Probability</h3>
+                <p>The probability of reaching higher multipliers decreases exponentially. Only 10% of games reach 2x, 1% reach 10x, and 0.1% reach 100x.</p>
+                <div class="probability-bar">
+                    <div class="probability-fill" id="probabilityFill"></div>
+                </div>
+            </div>
+            <div class="info-card">
+                <h3>About Spaceman</h3>
+                <p>Spaceman is a crash game where players bet on a multiplier that increases over time. The goal is to cash out before the multiplier crashes. Inspired by Pragmatic Play's popular game.</p>
+            </div>
         </div>
     </div>
-    
-    <footer>
-        Dibuat dengan inspirasi dari Pragmatic Spaceman
-    </footer>
 
     <script>
-        // Elemen DOM
+        // Game state
+        const gameState = {
+            balance: 1000.00,
+            currentBet: 0,
+            currentMultiplier: 1.00,
+            isPlaying: false,
+            isAutoPlay: false,
+            roundHistory: [],
+            crashPoint: 0,
+            gameInterval: null,
+            multiplierSpeed: 0.01,
+            roundsPlayed: 0,
+            lastWin: 0
+        };
+
+        // DOM Elements
+        const balanceElement = document.getElementById('balance');
         const multiplierElement = document.getElementById('multiplier');
         const timerElement = document.getElementById('timer');
         const historyList = document.getElementById('historyList');
-        const pauseBtn = document.getElementById('pauseBtn');
-        const manualBtn = document.getElementById('manualBtn');
+        const playBtn = document.getElementById('playBtn');
+        const cashoutBtn = document.getElementById('cashoutBtn');
+        const betAmountInput = document.getElementById('betAmount');
+        const currentBetElement = document.getElementById('currentBet');
+        const potentialWinElement = document.getElementById('potentialWin');
+        const lastWinElement = document.getElementById('lastWin');
+        const roundsPlayedElement = document.getElementById('roundsPlayed');
+        const probabilityFill = document.getElementById('probabilityFill');
         const starsContainer = document.getElementById('stars');
+        const betButtons = document.querySelectorAll('.bet-button');
+        const autoPlayBtn = document.getElementById('autoPlayBtn');
 
-        // Variabel state
-        let isPaused = false;
-        let timer;
-        let countdown = 5;
-        let history = [];
-        let currentMultiplier = 1.00;
-
-        // Fungsi untuk menghasilkan bintang latar belakang
+        // Initialize stars
         function createStars() {
-            const starsCount = 150;
+            const starsCount = 200;
             
             for (let i = 0; i < starsCount; i++) {
                 const star = document.createElement('div');
                 star.classList.add('star');
                 
-                // Posisi acak
                 const left = Math.random() * 100;
                 const top = Math.random() * 100;
-                
-                // Ukuran acak
                 const size = Math.random() * 3;
-                
-                // Animasi delay acak
                 const delay = Math.random() * 5;
                 
                 star.style.left = `${left}%`;
@@ -413,164 +646,216 @@
             }
         }
 
-        // Fungsi untuk menghasilkan angka random perkalian dengan probabilitas menurun untuk nilai tinggi
-        function generateRandomMultiplier() {
-            // Menggunakan distribusi eksponensial terbalik untuk membuat nilai tinggi lebih jarang
-            const min = 1.00;
-            const max = 5000.00;
-            
-            // Membuat distribusi dengan bias terhadap nilai rendah
-            let multiplier;
+        // Generate crash point using exponential distribution
+        function generateCrashPoint() {
+            // Higher multipliers are exponentially less likely
             const rand = Math.random();
-            
-            if (rand < 0.7) {
-                // 70% kemungkinan untuk nilai rendah (1.00 - 10.00)
-                multiplier = (Math.random() * 9 + 1).toFixed(2);
-            } else if (rand < 0.9) {
-                // 20% kemungkinan untuk nilai sedang (10.00 - 100.00)
-                multiplier = (Math.random() * 90 + 10).toFixed(2);
-            } else if (rand < 0.98) {
-                // 8% kemungkinan untuk nilai tinggi (100.00 - 1000.00)
-                multiplier = (Math.random() * 900 + 100).toFixed(2);
-            } else {
-                // 2% kemungkinan untuk nilai sangat tinggi (1000.00 - 5000.00)
-                multiplier = (Math.random() * 4000 + 1000).toFixed(2);
-            }
-            
-            return parseFloat(multiplier);
+            // Using formula that makes high multipliers rare
+            const crashPoint = Math.max(1.00, (1 / (1 - rand)) * 0.02);
+            return Math.min(crashPoint, 5000.00); // Cap at 5000x
         }
 
-        // Fungsi untuk animasi penghitungan dari 1.00 ke angka target
-        function animateToMultiplier(targetMultiplier) {
-            if (isPaused) return;
+        // Start a new round
+        function startRound() {
+            if (gameState.isPlaying) return;
             
-            const start = currentMultiplier;
-            const duration = 2000; // 2 detik animasi
-            const startTime = performance.now();
+            const betAmount = parseFloat(betAmountInput.value);
+            if (isNaN(betAmount) || betAmount < 1 || betAmount > gameState.balance) {
+                alert('Invalid bet amount!');
+                return;
+            }
             
-            function updateAnimation(currentTime) {
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
+            gameState.isPlaying = true;
+            gameState.currentBet = betAmount;
+            gameState.currentMultiplier = 1.00;
+            gameState.crashPoint = generateCrashPoint();
+            gameState.balance -= betAmount;
+            gameState.roundsPlayed++;
+            
+            updateUI();
+            playBtn.disabled = true;
+            cashoutBtn.disabled = false;
+            
+            // Start multiplier animation
+            animateMultiplier();
+        }
+
+        // Animate multiplier increasing
+        function animateMultiplier() {
+            let startTime = null;
+            const duration = 30000; // 30 seconds max
+            
+            function step(timestamp) {
+                if (!startTime) startTime = timestamp;
+                const progress = timestamp - startTime;
                 
-                // Menggunakan easing function untuk animasi yang lebih smooth
-                const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+                // Calculate current multiplier with easing
+                const progressRatio = progress / duration;
+                const easeOut = 1 - Math.pow(1 - progressRatio, 3);
                 
-                currentMultiplier = start + (targetMultiplier - start) * easeOutQuart;
-                multiplierElement.textContent = `${currentMultiplier.toFixed(2)}x`;
+                // Increase multiplier with accelerating speed
+                gameState.currentMultiplier = 1.00 + (gameState.crashPoint - 1.00) * easeOut;
                 
-                if (progress < 1) {
-                    requestAnimationFrame(updateAnimation);
-                } else {
-                    currentMultiplier = targetMultiplier;
-                    multiplierElement.textContent = `${currentMultiplier.toFixed(2)}x`;
-                    multiplierElement.classList.add('animate');
-                    
-                    setTimeout(() => {
-                        multiplierElement.classList.remove('animate');
-                    }, 500);
-                    
-                    // Tambah ke riwayat
-                    addToHistory(targetMultiplier);
+                // Update display
+                multiplierElement.textContent = gameState.currentMultiplier.toFixed(2) + 'x';
+                potentialWinElement.textContent = (gameState.currentBet * gameState.currentMultiplier).toFixed(2);
+                
+                // Update probability bar
+                updateProbabilityBar();
+                
+                // Check for crash
+                if (gameState.currentMultiplier >= gameState.crashPoint) {
+                    crash();
+                    return;
+                }
+                
+                // Continue animation if still playing
+                if (gameState.isPlaying) {
+                    requestAnimationFrame(step);
                 }
             }
             
-            requestAnimationFrame(updateAnimation);
+            requestAnimationFrame(step);
         }
 
-        // Fungsi untuk memperbarui tampilan perkalian
-        function updateMultiplier() {
-            if (isPaused) return;
+        // Cash out current round
+        function cashOut() {
+            if (!gameState.isPlaying) return;
             
-            const newMultiplier = generateRandomMultiplier();
-            animateToMultiplier(newMultiplier);
+            const winAmount = gameState.currentBet * gameState.currentMultiplier;
+            gameState.balance += winAmount;
+            gameState.lastWin = winAmount - gameState.currentBet;
             
-            // Reset countdown
-            countdown = 5;
-            updateTimer();
+            // Add to history
+            addToHistory(gameState.currentMultiplier);
+            
+            endRound();
+            
+            // If auto play is enabled, start next round
+            if (gameState.isAutoPlay) {
+                setTimeout(startRound, 2000);
+            }
         }
 
-        // Fungsi untuk menambah perkalian ke riwayat
+        // End the round (crash or cashout)
+        function endRound() {
+            gameState.isPlaying = false;
+            playBtn.disabled = false;
+            cashoutBtn.disabled = true;
+            gameState.currentBet = 0;
+            updateUI();
+        }
+
+        // Crash the round
+        function crash() {
+            multiplierElement.textContent = 'CRASH!';
+            multiplierElement.style.color = '#ff3333';
+            multiplierElement.style.textShadow = '0 0 20px #ff3333, 0 0 40px #ff3333';
+            
+            // Add to history
+            addToHistory(gameState.currentMultiplier);
+            
+            setTimeout(() => {
+                multiplierElement.style.color = '#00ffcc';
+                multiplierElement.style.textShadow = '0 0 20px #00ffcc, 0 0 40px #00ffcc';
+                endRound();
+                
+                // If auto play is enabled, start next round
+                if (gameState.isAutoPlay) {
+                    setTimeout(startRound, 2000);
+                }
+            }, 2000);
+        }
+
+        // Add multiplier to history
         function addToHistory(multiplier) {
-            history.unshift(multiplier);
+            const historyItem = document.createElement('div');
             
-            // Batasi riwayat hingga 10 item
-            if (history.length > 10) {
-                history.pop();
+            // Determine multiplier category for styling
+            if (multiplier >= 10) {
+                historyItem.classList.add('history-item', 'high');
+            } else if (multiplier >= 2) {
+                historyItem.classList.add('history-item', 'medium');
+            } else {
+                historyItem.classList.add('history-item', 'low');
             }
             
-            // Perbarui tampilan riwayat
-            updateHistoryDisplay();
+            historyItem.innerHTML = `<i class="fas fa-rocket"></i> ${multiplier.toFixed(2)}x`;
+            
+            // Add to beginning of list
+            historyList.insertBefore(historyItem, historyList.firstChild);
+            
+            // Limit history to 20 items
+            if (historyList.children.length > 20) {
+                historyList.removeChild(historyList.lastChild);
+            }
+            
+            // Add to game state history
+            gameState.roundHistory.unshift(multiplier);
         }
 
-        // Fungsi untuk memperbarui tampilan riwayat
-        function updateHistoryDisplay() {
-            historyList.innerHTML = '';
+        // Update probability bar based on current multiplier
+        function updateProbabilityBar() {
+            const multiplier = gameState.currentMultiplier;
+            // Probability decreases exponentially as multiplier increases
+            const probability = Math.min(100, 100 / Math.pow(multiplier, 0.5));
+            probabilityFill.style.width = `${probability}%`;
+        }
+
+        // Update all UI elements
+        function updateUI() {
+            balanceElement.textContent = gameState.balance.toFixed(2);
+            currentBetElement.textContent = gameState.currentBet.toFixed(2);
+            potentialWinElement.textContent = (gameState.currentBet * gameState.currentMultiplier).toFixed(2);
+            lastWinElement.textContent = gameState.lastWin.toFixed(2);
+            roundsPlayedElement.textContent = gameState.roundsPlayed;
             
-            history.forEach(multiplier => {
-                const li = document.createElement('li');
-                li.textContent = `${multiplier.toFixed(2)}x`;
+            // Update button states
+            cashoutBtn.disabled = !gameState.isPlaying;
+            playBtn.innerHTML = gameState.isPlaying ? 
+                '<i class="fas fa-pause"></i> Playing...' : 
+                '<i class="fas fa-play"></i> Start Round';
                 
-                // Warna berbeda berdasarkan nilai perkalian
-                if (multiplier >= 1000) {
-                    li.style.background = 'linear-gradient(to right, #ff0000, #ff9900)';
-                    li.style.color = '#fff';
-                } else if (multiplier >= 100) {
-                    li.style.background = 'linear-gradient(to right, #ffcc00, #ff6600)';
-                } else if (multiplier >= 10) {
-                    li.style.background = 'linear-gradient(to right, #00ccff, #0066ff)';
-                }
+            autoPlayBtn.innerHTML = gameState.isAutoPlay ?
+                '<i class="fas fa-robot"></i> Auto Play ON' :
+                '<i class="fas fa-robot"></i> Auto Play';
+        }
+
+        // Event Listeners
+        playBtn.addEventListener('click', startRound);
+        cashoutBtn.addEventListener('click', cashOut);
+        
+        autoPlayBtn.addEventListener('click', function() {
+            gameState.isAutoPlay = !gameState.isAutoPlay;
+            updateUI();
+            
+            if (gameState.isAutoPlay && !gameState.isPlaying) {
+                startRound();
+            }
+        });
+
+        // Bet amount buttons
+        betButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const betValue = parseFloat(this.getAttribute('data-bet'));
+                betAmountInput.value = betValue.toFixed(2);
                 
-                historyList.appendChild(li);
+                // Update active state
+                betButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
             });
-        }
-
-        // Fungsi untuk memperbarui timer
-        function updateTimer() {
-            timerElement.textContent = `Perubahan berikutnya dalam: ${countdown} detik`;
-        }
-
-        // Fungsi untuk memulai timer
-        function startTimer() {
-            clearInterval(timer);
-            
-            timer = setInterval(() => {
-                if (!isPaused) {
-                    countdown--;
-                    updateTimer();
-                    
-                    if (countdown <= 0) {
-                        updateMultiplier();
-                    }
-                }
-            }, 1000);
-        }
-
-        // Event listeners untuk tombol
-        pauseBtn.addEventListener('click', () => {
-            isPaused = !isPaused;
-            pauseBtn.textContent = isPaused ? 'Lanjutkan' : 'Jeda';
-            
-            if (!isPaused) {
-                startTimer();
-            }
         });
 
-        manualBtn.addEventListener('click', () => {
-            if (!isPaused) {
-                updateMultiplier();
-                countdown = 5;
-                updateTimer();
-            }
-        });
-
-        // Inisialisasi
+        // Initialize the game
         function init() {
             createStars();
-            updateMultiplier();
-            startTimer();
+            updateUI();
+            
+            // Set initial active bet button
+            betButtons[2].classList.add('active'); // $10 button
         }
 
-        // Jalankan inisialisasi saat halaman dimuat
+        // Start the game when page loads
         window.addEventListener('load', init);
     </script>
 </body>
