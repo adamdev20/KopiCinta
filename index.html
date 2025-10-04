@@ -118,6 +118,7 @@
             font-size: 40px;
             color: white;
             transition: left 0.1s linear;
+            z-index: 10;
         }
         
         .multiplier-display {
@@ -129,6 +130,52 @@
             font-weight: bold;
             color: #ffcc00;
             text-shadow: 0 0 10px rgba(255, 204, 0, 0.7);
+            z-index: 10;
+        }
+        
+        .multiplier-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+        }
+        
+        .line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-50%);
+        }
+        
+        .multiplier-markers {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: translateY(-50%);
+        }
+        
+        .marker {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .marker-label {
+            position: absolute;
+            top: calc(50% - 25px);
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
         }
         
         .multiplier-history {
@@ -228,25 +275,6 @@
             font-weight: bold;
         }
         
-        .auto-cashout {
-            display: flex;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 10px;
-            padding: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .auto-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-            outline: none;
-        }
-        
         .action-buttons {
             display: flex;
             gap: 10px;
@@ -337,15 +365,23 @@
             color: #cccccc;
         }
         
-        /* Animasi */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        /* Win Display */
+        .win-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 40px;
+            font-weight: bold;
+            color: #ffcc00;
+            text-shadow: 0 0 20px rgba(255, 204, 0, 0.8);
+            opacity: 0;
+            transition: opacity 0.5s;
+            z-index: 20;
         }
         
-        .pulse {
-            animation: pulse 1s infinite;
+        .win-display.show {
+            opacity: 1;
         }
         
         /* Responsif */
@@ -386,6 +422,26 @@
         .toast.error {
             border-left-color: #ff3333;
         }
+        
+        /* Instructions */
+        .instructions {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .instructions h3 {
+            color: #ffcc00;
+            margin-bottom: 10px;
+        }
+        
+        .instructions p {
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #cccccc;
+        }
     </style>
 </head>
 <body>
@@ -401,8 +457,13 @@
         <div class="game-area">
             <div class="game-container">
                 <div class="game-canvas">
+                    <div class="multiplier-line">
+                        <div class="line"></div>
+                        <div class="multiplier-markers" id="multiplierMarkers"></div>
+                    </div>
                     <div class="spaceman" id="spaceman">🚀</div>
                     <div class="multiplier-display" id="multiplierDisplay">1.00x</div>
+                    <div class="win-display" id="winDisplay"></div>
                 </div>
                 <div class="multiplier-history" id="multiplierHistory">
                     <div class="multiplier-item low">1.25x</div>
@@ -433,13 +494,6 @@
                     </div>
                 </div>
                 
-                <div class="bet-section">
-                    <div class="section-title">AUTO CASHOUT</div>
-                    <div class="auto-cashout">
-                        <input type="text" class="auto-input" id="autoCashoutInput" value="10.00x">
-                    </div>
-                </div>
-                
                 <div class="action-buttons">
                     <button class="play-button" id="playButton">MAIN</button>
                     <button class="cashout-button" id="cashoutButton">CASHOUT</button>
@@ -462,6 +516,16 @@
                 </div>
             </div>
         </div>
+        
+        <div class="instructions">
+            <h3>Cara Bermain:</h3>
+            <p>1. Tentukan jumlah taruhan Anda</p>
+            <p>2. Klik tombol MAIN untuk memulai permainan</p>
+            <p>3. Spaceman akan terbang dan multiplier akan meningkat</p>
+            <p>4. Klik tombol CASHOUT kapan saja untuk mengamankan kemenangan</p>
+            <p>5. Jika tidak melakukan cashout sebelum crash, Anda akan kehilangan taruhan</p>
+            <p>6. Gunakan SPACE untuk cashout dengan cepat</p>
+        </div>
     </div>
 
     <div class="toast" id="toast"></div>
@@ -476,9 +540,10 @@
             const spaceman = document.getElementById('spaceman');
             const betButtons = document.querySelectorAll('.bet-button');
             const betInput = document.getElementById('betInput');
-            const autoCashoutInput = document.getElementById('autoCashoutInput');
             const balanceSpan = document.getElementById('balanceValue');
             const multiplierHistory = document.getElementById('multiplierHistory');
+            const multiplierMarkers = document.getElementById('multiplierMarkers');
+            const winDisplay = document.getElementById('winDisplay');
             const toast = document.getElementById('toast');
             
             // Game state
@@ -487,8 +552,28 @@
             let multiplierInterval;
             let balance = 1000000;
             let currentBet = 0;
-            let autoCashoutValue = 10.0;
             let crashPoint = 0;
+            let gameSpeed = 100; // ms per update
+            
+            // Inisialisasi marker multiplier
+            function initializeMarkers() {
+                multiplierMarkers.innerHTML = '';
+                for (let i = 1; i <= 20; i++) {
+                    const marker = document.createElement('div');
+                    marker.className = 'marker';
+                    marker.style.left = `${(i / 20) * 100}%`;
+                    
+                    const label = document.createElement('div');
+                    label.className = 'marker-label';
+                    label.textContent = `${i}x`;
+                    label.style.left = `${(i / 20) * 100}%`;
+                    
+                    multiplierMarkers.appendChild(marker);
+                    multiplierMarkers.appendChild(label);
+                }
+            }
+            
+            initializeMarkers();
             
             // Fungsi untuk menampilkan notifikasi
             function showToast(message, type = '') {
@@ -501,22 +586,33 @@
                 }, 3000);
             }
             
+            // Fungsi untuk menampilkan kemenangan
+            function showWin(amount) {
+                winDisplay.textContent = `+${formatCurrency(amount)}`;
+                winDisplay.classList.add('show');
+                
+                setTimeout(() => {
+                    winDisplay.classList.remove('show');
+                }, 2000);
+            }
+            
             // Fungsi untuk menghasilkan titik crash acak
             function generateCrashPoint() {
                 const random = Math.random();
                 let crashMultiplier;
                 
-                if (random < 0.1) {
-                    // 10% kemungkinan crash di bawah 1.5x
+                // Algoritma crash point yang lebih realistis
+                if (random < 0.15) {
+                    // 15% kemungkinan crash di bawah 1.5x
                     crashMultiplier = 1 + Math.random() * 0.5;
-                } else if (random < 0.3) {
+                } else if (random < 0.35) {
                     // 20% kemungkinan crash antara 1.5x-3x
                     crashMultiplier = 1.5 + Math.random() * 1.5;
-                } else if (random < 0.6) {
+                } else if (random < 0.65) {
                     // 30% kemungkinan crash antara 3x-10x
                     crashMultiplier = 3 + Math.random() * 7;
                 } else {
-                    // 40% kemungkinan crash di atas 10x
+                    // 35% kemungkinan crash di atas 10x
                     crashMultiplier = 10 + Math.random() * 40;
                 }
                 
@@ -538,11 +634,17 @@
                     return;
                 }
                 
+                if (betAmount < 1000) {
+                    showToast('Taruhan minimum adalah 1.000!', 'error');
+                    return;
+                }
+                
                 // Set status permainan
                 isPlaying = true;
                 currentBet = betAmount;
                 currentMultiplier = 1.0;
                 crashPoint = generateCrashPoint();
+                gameSpeed = 100; // Reset speed
                 
                 // Update UI
                 playButton.disabled = true;
@@ -555,26 +657,28 @@
                 spaceman.style.left = '20%';
                 
                 // Mulai meningkatkan multiplier
-                multiplierInterval = setInterval(updateMultiplier, 100);
+                multiplierInterval = setInterval(updateMultiplier, gameSpeed);
                 
-                showToast('Permainan dimulai!', 'success');
+                showToast('Permainan dimulai! Klik CASHOUT kapan saja untuk mengamankan kemenangan', 'success');
             }
             
             // Fungsi untuk update multiplier
             function updateMultiplier() {
-                // Tingkatkan multiplier
-                currentMultiplier += 0.01;
+                // Tingkatkan multiplier dengan percepatan gradual
+                const increment = 0.01 + (currentMultiplier * 0.001);
+                currentMultiplier += increment;
                 multiplierDisplay.textContent = currentMultiplier.toFixed(2) + 'x';
                 
                 // Update posisi spaceman berdasarkan multiplier
-                const progress = Math.min((currentMultiplier - 1) / (crashPoint - 1), 1);
+                const maxMultiplier = Math.max(crashPoint, 20);
+                const progress = Math.min((currentMultiplier - 1) / (maxMultiplier - 1), 1);
                 spaceman.style.left = `${20 + (progress * 60)}%`;
                 
-                // Cek auto cashout
-                const autoCashout = parseFloat(autoCashoutInput.value.replace('x', ''));
-                if (!isNaN(autoCashout) && currentMultiplier >= autoCashout) {
-                    cashout();
-                    return;
+                // Percepat game sedikit seiring waktu
+                if (gameSpeed > 30) {
+                    gameSpeed -= 0.1;
+                    clearInterval(multiplierInterval);
+                    multiplierInterval = setInterval(updateMultiplier, gameSpeed);
                 }
                 
                 // Cek jika mencapai crash point
@@ -594,7 +698,10 @@
                 // Tambahkan ke history
                 addToHistory(currentMultiplier);
                 
-                showToast(`Cashout berhasil! Anda memenangkan ${formatCurrency(winAmount)}`, 'success');
+                // Tampilkan kemenangan
+                showWin(winAmount);
+                
+                showToast(`Cashout berhasil pada ${currentMultiplier.toFixed(2)}x! Anda memenangkan ${formatCurrency(winAmount)}`, 'success');
                 
                 endGame(true);
             }
@@ -667,7 +774,7 @@
             
             // Event listener untuk tombol clear
             clearButton.addEventListener('click', function() {
-                betInput.value = '1.000';
+                betInput.value = '10.000';
             });
             
             // Event listener untuk tombol taruhan
@@ -728,21 +835,15 @@
                 this.value = formatCurrency(numValue);
             });
             
-            // Format input auto cashout
-            autoCashoutInput.addEventListener('input', function() {
-                let value = this.value.replace('x', '');
-                if (isNaN(value) || value === '') {
-                    this.value = '1.00x';
-                } else {
-                    this.value = parseFloat(value).toFixed(2) + 'x';
-                }
-            });
-            
             // Cashout dengan tombol spasi
             document.addEventListener('keydown', function(e) {
-                if (e.code === 'Space' && isPlaying) {
+                if (e.code === 'Space') {
                     e.preventDefault();
-                    cashout();
+                    if (isPlaying) {
+                        cashout();
+                    } else {
+                        startGame();
+                    }
                 }
             });
         });
