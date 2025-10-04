@@ -117,6 +117,7 @@
             justify-content: center;
             font-size: 40px;
             color: white;
+            transition: left 0.1s linear;
         }
         
         .multiplier-display {
@@ -273,6 +274,24 @@
             cursor: not-allowed;
         }
         
+        .cashout-button {
+            flex: 2;
+            background: linear-gradient(135deg, #ff3333, #cc0000);
+            border: none;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: none;
+        }
+        
+        .cashout-button:hover {
+            background: linear-gradient(135deg, #cc0000, #aa0000);
+        }
+        
         .clear-button {
             flex: 1;
             background: rgba(255, 0, 0, 0.3);
@@ -329,15 +348,6 @@
             animation: pulse 1s infinite;
         }
         
-        @keyframes rocket {
-            0% { left: 20%; transform: translateY(-50%); }
-            100% { left: 80%; transform: translateY(-50%); }
-        }
-        
-        .rocket-animation {
-            animation: rocket 3s linear forwards;
-        }
-        
         /* Responsif */
         @media (max-width: 768px) {
             .game-area {
@@ -348,6 +358,34 @@
                 grid-template-columns: repeat(2, 1fr);
             }
         }
+        
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            z-index: 1000;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+            border-left: 4px solid #ffcc00;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        .toast.success {
+            border-left-color: #00cc66;
+        }
+        
+        .toast.error {
+            border-left-color: #ff3333;
+        }
     </style>
 </head>
 <body>
@@ -355,7 +393,7 @@
         <header>
             <div class="logo">SPACE<span>MAN</span></div>
             <div class="user-info">
-                <div class="balance">Saldo: <span>1.000.000</span></div>
+                <div class="balance">Saldo: <span id="balanceValue">1.000.000</span></div>
                 <div class="avatar">U</div>
             </div>
         </header>
@@ -363,10 +401,10 @@
         <div class="game-area">
             <div class="game-container">
                 <div class="game-canvas">
-                    <div class="spaceman">🚀</div>
-                    <div class="multiplier-display">1.00x</div>
+                    <div class="spaceman" id="spaceman">🚀</div>
+                    <div class="multiplier-display" id="multiplierDisplay">1.00x</div>
                 </div>
-                <div class="multiplier-history">
+                <div class="multiplier-history" id="multiplierHistory">
                     <div class="multiplier-item low">1.25x</div>
                     <div class="multiplier-item medium">2.45x</div>
                     <div class="multiplier-item high">5.67x</div>
@@ -383,28 +421,29 @@
                 <div class="bet-section">
                     <div class="section-title">JUMLAH TARUHAN</div>
                     <div class="bet-amount">
-                        <input type="text" class="bet-input" value="10.000">
+                        <input type="text" class="bet-input" id="betInput" value="10.000">
                     </div>
                     <div class="bet-buttons">
-                        <button class="bet-button">½</button>
-                        <button class="bet-button">2x</button>
-                        <button class="bet-button">MIN</button>
-                        <button class="bet-button active">10K</button>
-                        <button class="bet-button">100K</button>
-                        <button class="bet-button">MAX</button>
+                        <button class="bet-button" data-action="half">½</button>
+                        <button class="bet-button" data-action="double">2x</button>
+                        <button class="bet-button" data-action="min">MIN</button>
+                        <button class="bet-button active" data-action="10k">10K</button>
+                        <button class="bet-button" data-action="100k">100K</button>
+                        <button class="bet-button" data-action="max">MAX</button>
                     </div>
                 </div>
                 
                 <div class="bet-section">
                     <div class="section-title">AUTO CASHOUT</div>
                     <div class="auto-cashout">
-                        <input type="text" class="auto-input" value="10.00x">
+                        <input type="text" class="auto-input" id="autoCashoutInput" value="10.00x">
                     </div>
                 </div>
                 
                 <div class="action-buttons">
                     <button class="play-button" id="playButton">MAIN</button>
-                    <button class="clear-button">HAPUS</button>
+                    <button class="cashout-button" id="cashoutButton">CASHOUT</button>
+                    <button class="clear-button" id="clearButton">HAPUS</button>
                 </div>
                 
                 <div class="game-stats">
@@ -425,35 +464,63 @@
         </div>
     </div>
 
+    <div class="toast" id="toast"></div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Elements
             const playButton = document.getElementById('playButton');
-            const multiplierDisplay = document.querySelector('.multiplier-display');
-            const spaceman = document.querySelector('.spaceman');
+            const cashoutButton = document.getElementById('cashoutButton');
+            const clearButton = document.getElementById('clearButton');
+            const multiplierDisplay = document.getElementById('multiplierDisplay');
+            const spaceman = document.getElementById('spaceman');
             const betButtons = document.querySelectorAll('.bet-button');
-            const betInput = document.querySelector('.bet-input');
-            const balanceSpan = document.querySelector('.balance span');
-            const multiplierHistory = document.querySelector('.multiplier-history');
+            const betInput = document.getElementById('betInput');
+            const autoCashoutInput = document.getElementById('autoCashoutInput');
+            const balanceSpan = document.getElementById('balanceValue');
+            const multiplierHistory = document.getElementById('multiplierHistory');
+            const toast = document.getElementById('toast');
             
+            // Game state
             let isPlaying = false;
             let currentMultiplier = 1.0;
             let multiplierInterval;
             let balance = 1000000;
+            let currentBet = 0;
+            let autoCashoutValue = 10.0;
+            let crashPoint = 0;
             
-            // Fungsi untuk menghasilkan multiplier acak
-            function generateRandomMultiplier() {
-                // Simulasi perhitungan multiplier dengan kemungkinan crash
+            // Fungsi untuk menampilkan notifikasi
+            function showToast(message, type = '') {
+                toast.textContent = message;
+                toast.className = 'toast';
+                toast.classList.add(type, 'show');
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+            
+            // Fungsi untuk menghasilkan titik crash acak
+            function generateCrashPoint() {
                 const random = Math.random();
+                let crashMultiplier;
+                
                 if (random < 0.1) {
-                    // 10% kemungkinan crash di bawah 2x
-                    return (1 + Math.random()).toFixed(2);
+                    // 10% kemungkinan crash di bawah 1.5x
+                    crashMultiplier = 1 + Math.random() * 0.5;
                 } else if (random < 0.3) {
-                    // 20% kemungkinan crash antara 2x-5x
-                    return (2 + Math.random() * 3).toFixed(2);
+                    // 20% kemungkinan crash antara 1.5x-3x
+                    crashMultiplier = 1.5 + Math.random() * 1.5;
+                } else if (random < 0.6) {
+                    // 30% kemungkinan crash antara 3x-10x
+                    crashMultiplier = 3 + Math.random() * 7;
                 } else {
-                    // 70% kemungkinan crash di atas 5x
-                    return (5 + Math.random() * 20).toFixed(2);
+                    // 40% kemungkinan crash di atas 10x
+                    crashMultiplier = 10 + Math.random() * 40;
                 }
+                
+                return parseFloat(crashMultiplier.toFixed(2));
             }
             
             // Fungsi untuk memulai permainan
@@ -461,68 +528,103 @@
                 if (isPlaying) return;
                 
                 const betAmount = parseInt(betInput.value.replace(/\./g, ''));
-                if (betAmount > balance) {
-                    alert('Saldo tidak cukup!');
+                if (isNaN(betAmount) || betAmount <= 0) {
+                    showToast('Masukkan jumlah taruhan yang valid!', 'error');
                     return;
                 }
                 
+                if (betAmount > balance) {
+                    showToast('Saldo tidak cukup!', 'error');
+                    return;
+                }
+                
+                // Set status permainan
                 isPlaying = true;
-                playButton.disabled = true;
-                playButton.textContent = 'TERBANG...';
-                
-                // Reset multiplier
+                currentBet = betAmount;
                 currentMultiplier = 1.0;
-                multiplierDisplay.textContent = currentMultiplier.toFixed(2) + 'x';
+                crashPoint = generateCrashPoint();
                 
-                // Animasi spaceman
-                spaceman.classList.add('rocket-animation');
+                // Update UI
+                playButton.disabled = true;
+                playButton.style.display = 'none';
+                cashoutButton.style.display = 'block';
+                multiplierDisplay.textContent = currentMultiplier.toFixed(2) + 'x';
+                multiplierDisplay.style.color = '#ffcc00';
+                
+                // Reset posisi spaceman
+                spaceman.style.left = '20%';
                 
                 // Mulai meningkatkan multiplier
-                multiplierInterval = setInterval(function() {
-                    currentMultiplier += 0.01;
-                    multiplierDisplay.textContent = currentMultiplier.toFixed(2) + 'x';
-                    
-                    // Tentukan kapan game akan berhenti (crash)
-                    const crashPoint = parseFloat(generateRandomMultiplier());
-                    
-                    // Jika mencapai titik crash, hentikan game
-                    if (currentMultiplier >= crashPoint) {
-                        endGame(false, betAmount, crashPoint);
-                    }
-                }, 100);
+                multiplierInterval = setInterval(updateMultiplier, 100);
+                
+                showToast('Permainan dimulai!', 'success');
+            }
+            
+            // Fungsi untuk update multiplier
+            function updateMultiplier() {
+                // Tingkatkan multiplier
+                currentMultiplier += 0.01;
+                multiplierDisplay.textContent = currentMultiplier.toFixed(2) + 'x';
+                
+                // Update posisi spaceman berdasarkan multiplier
+                const progress = Math.min((currentMultiplier - 1) / (crashPoint - 1), 1);
+                spaceman.style.left = `${20 + (progress * 60)}%`;
+                
+                // Cek auto cashout
+                const autoCashout = parseFloat(autoCashoutInput.value.replace('x', ''));
+                if (!isNaN(autoCashout) && currentMultiplier >= autoCashout) {
+                    cashout();
+                    return;
+                }
+                
+                // Cek jika mencapai crash point
+                if (currentMultiplier >= crashPoint) {
+                    endGame(false);
+                }
+            }
+            
+            // Fungsi untuk cashout manual
+            function cashout() {
+                if (!isPlaying) return;
+                
+                const winAmount = Math.floor(currentBet * currentMultiplier);
+                balance += winAmount;
+                updateBalance();
+                
+                // Tambahkan ke history
+                addToHistory(currentMultiplier);
+                
+                showToast(`Cashout berhasil! Anda memenangkan ${formatCurrency(winAmount)}`, 'success');
+                
+                endGame(true);
             }
             
             // Fungsi untuk mengakhiri permainan
-            function endGame(isCashout, betAmount, crashPoint) {
+            function endGame(isCashout) {
                 clearInterval(multiplierInterval);
                 isPlaying = false;
+                
+                // Update UI
                 playButton.disabled = false;
-                playButton.textContent = 'MAIN';
+                playButton.style.display = 'block';
+                cashoutButton.style.display = 'none';
                 
-                // Hentikan animasi
-                spaceman.classList.remove('rocket-animation');
-                spaceman.style.left = '20%';
-                
-                if (isCashout) {
-                    // Player melakukan cashout
-                    const winAmount = Math.floor(betAmount * currentMultiplier);
-                    balance += winAmount;
-                    balanceSpan.textContent = balance.toLocaleString('id-ID');
-                    
-                    // Tambahkan ke history
-                    addToHistory(currentMultiplier);
-                    
-                    alert(`Cashout berhasil! Anda memenangkan ${winAmount.toLocaleString('id-ID')}`);
-                } else {
+                if (!isCashout) {
                     // Game crash
-                    balance -= betAmount;
-                    balanceSpan.textContent = balance.toLocaleString('id-ID');
+                    balance -= currentBet;
+                    updateBalance();
                     
                     // Tambahkan ke history
                     addToHistory(crashPoint);
                     
-                    alert(`Game crash pada ${crashPoint.toFixed(2)}x! Anda kehilangan ${betAmount.toLocaleString('id-ID')}`);
+                    // Tampilkan crash point di display
+                    multiplierDisplay.textContent = crashPoint.toFixed(2) + 'x';
+                    multiplierDisplay.style.color = '#ff3333';
+                    
+                    showToast(`Game crash pada ${crashPoint.toFixed(2)}x! Anda kehilangan ${formatCurrency(currentBet)}`, 'error');
                 }
+                
+                currentBet = 0;
             }
             
             // Fungsi untuk menambahkan hasil ke history
@@ -547,8 +649,26 @@
                 }
             }
             
+            // Fungsi untuk update balance display
+            function updateBalance() {
+                balanceSpan.textContent = formatCurrency(balance);
+            }
+            
+            // Fungsi untuk format currency
+            function formatCurrency(amount) {
+                return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            }
+            
             // Event listener untuk tombol main
             playButton.addEventListener('click', startGame);
+            
+            // Event listener untuk tombol cashout
+            cashoutButton.addEventListener('click', cashout);
+            
+            // Event listener untuk tombol clear
+            clearButton.addEventListener('click', function() {
+                betInput.value = '1.000';
+            });
             
             // Event listener untuk tombol taruhan
             betButtons.forEach(button => {
@@ -560,30 +680,32 @@
                     this.classList.add('active');
                     
                     // Atur nilai taruhan berdasarkan tombol yang diklik
-                    const currentBet = parseInt(betInput.value.replace(/\./g, ''));
-                    let newBet = currentBet;
+                    const currentBetValue = parseInt(betInput.value.replace(/\./g, ''));
+                    let newBet = currentBetValue;
                     
-                    if (this.textContent === '½') {
-                        newBet = Math.floor(currentBet / 2);
-                    } else if (this.textContent === '2x') {
-                        newBet = currentBet * 2;
-                    } else if (this.textContent === 'MIN') {
-                        newBet = 1000;
-                    } else if (this.textContent === '10K') {
-                        newBet = 10000;
-                    } else if (this.textContent === '100K') {
-                        newBet = 100000;
-                    } else if (this.textContent === 'MAX') {
-                        newBet = balance;
-                    }
-                    
-                    // Pastikan taruhan tidak melebihi saldo
-                    if (newBet > balance) {
-                        newBet = balance;
+                    switch(this.dataset.action) {
+                        case 'half':
+                            newBet = Math.max(1000, Math.floor(currentBetValue / 2));
+                            break;
+                        case 'double':
+                            newBet = Math.min(balance, currentBetValue * 2);
+                            break;
+                        case 'min':
+                            newBet = 1000;
+                            break;
+                        case '10k':
+                            newBet = 10000;
+                            break;
+                        case '100k':
+                            newBet = 100000;
+                            break;
+                        case 'max':
+                            newBet = balance;
+                            break;
                     }
                     
                     // Format angka dengan pemisah ribuan
-                    betInput.value = newBet.toLocaleString('id-ID');
+                    betInput.value = formatCurrency(newBet);
                 });
             });
             
@@ -598,17 +720,32 @@
                     value = '0';
                 }
                 
-                this.value = parseInt(value).toLocaleString('id-ID');
+                let numValue = parseInt(value);
+                if (numValue > balance) {
+                    numValue = balance;
+                }
+                
+                this.value = formatCurrency(numValue);
             });
             
-            // Simulasi tombol cashout (bisa ditambahkan nanti)
+            // Format input auto cashout
+            autoCashoutInput.addEventListener('input', function() {
+                let value = this.value.replace('x', '');
+                if (isNaN(value) || value === '') {
+                    this.value = '1.00x';
+                } else {
+                    this.value = parseFloat(value).toFixed(2) + 'x';
+                }
+            });
+            
+            // Cashout dengan tombol spasi
             document.addEventListener('keydown', function(e) {
                 if (e.code === 'Space' && isPlaying) {
-                    endGame(true, parseInt(betInput.value.replace(/\./g, '')), 0);
+                    e.preventDefault();
+                    cashout();
                 }
             });
         });
     </script>
 </body>
 </html>
-
